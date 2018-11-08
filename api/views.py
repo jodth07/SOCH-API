@@ -119,7 +119,7 @@ class ProductsView(APIView):
             serializer = ProductSerializer(product, many=True)
             return Response(serializer.data)
         else:
-            products = Product.objects.getAll()
+            products = Product.objects.all()
             serializer = ProductSerializer(products, many=True)
             return Response(serializer.data)
 
@@ -132,7 +132,7 @@ class ProductsView(APIView):
         )
     def post(self, request):
         serializer = ProductSerializer(data=request.data)
-        if serializer.is_valid:
+        if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
@@ -196,13 +196,13 @@ class StylesView(APIView):
     @swagger_auto_schema(
         responses = {status.HTTP_200_OK : StyleSerializer(many=True)}
     )
-    def get(self, request, style_id):
+    def get(self, request, style_id=None):
         if style_id is not None:
             style = Style.objects.get(id=style_id)
             serializer = StyleSerializer(style, many=True)
             return Response(serializer.data)
         else:
-            styles = Style.objects.getAll()
+            styles = Style.objects.all()
             serializer = StyleSerializer(styles, many=True)
             return Response(serializer.data)
 
@@ -214,12 +214,12 @@ class StylesView(APIView):
         }
     )
     def post(self, request):
-        serializer = StyleSerializer(data=request.data)
-        if serializer.is_valid:
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        s_serializer = StyleSerializer(data=request.data)
+        if s_serializer.is_valid():
+            s_serializer.save()
+            return Response(s_serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(s_serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         response = {status.HTTP_204_NO_CONTENT}
@@ -250,9 +250,12 @@ class StylesView(APIView):
         style.save()
 
         serializer = StyleSerializer(data=request.data)
-        if serializer.is_valid:
+        if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
       
+
+class CartsView():
+    pass

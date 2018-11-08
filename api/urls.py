@@ -8,5 +8,6 @@ urlpatterns = [
     path('styles/', views.StylesView.as_view(), name='all-styles'),
     path('contacts/<int:contact_id>', views.ContactsView.as_view(), name='id-contacts'),
     path('contacts/', views.ContactsView.as_view(), name='all-contacts'),
-    path('group/', views.GroupView.as_view(), name="all-group")
+    path('group/', views.GroupView.as_view(), name="all-group"),
+    path('category', views.CategoryView.as_view(), name="all-categories")
 ]

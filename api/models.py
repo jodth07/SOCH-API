@@ -9,6 +9,9 @@ import django
 class Group(models.Model):
     group = models.CharField(default="", max_length=50)
     
+    def __str__(self):
+        return self.group
+    
 class Contact(models.Model):
     first_name = models.CharField(max_length=50) 
     last_name = models.CharField(max_length=50)
@@ -17,7 +20,9 @@ class Contact(models.Model):
     address = models.CharField(default="here", max_length=50) #
     group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, default="") #
     # group = models.ForeignKey(Group, related_name='contacts', on_delete=models.CASCADE) Look up the parameters for foreign key 
-    
+
+    def __str__(self):
+        return f"{self.last_name}, {self.first_name}"    
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,7 +38,10 @@ class GroupSerializer(serializers.ModelSerializer):
 # Project models here. 
 
 class Category(models.Model):
-    category = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.name
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -54,6 +62,9 @@ class Product(models.Model):
     purchased_date = models.DateField(blank=True, default=django.utils.timezone.now)
     categories = models.ManyToManyField(Category)
 
+    def __str__(self):
+        return self.name
+
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -72,6 +83,8 @@ class Style(models.Model):
     purchased_date = models.DateField(blank=True, default=django.utils.timezone.now)
     categories = models.ManyToManyField(Category)
 
+    def __str__(self):
+            return self.name
 
 class StyleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -80,9 +93,12 @@ class StyleSerializer(serializers.ModelSerializer):
 
 
 class Cart (models.Model):
-    styles = models.ForeignKey(Style, on_delete=models.CASCADE)
-    products = models.ForeignKey(Product, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50, default="my cart")
+    styles = models.ForeignKey(Style, on_delete=models.CASCADE, null=True, blank=True, default="")
+    products = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True, default="")
 
+    def __str__(self):
+        return self.name
 
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
@@ -91,9 +107,12 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class Purchased(models.Model):
-    styles = models.ForeignKey(Style, on_delete=models.CASCADE)
-    products = models.ForeignKey(Product, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50, default="my purchase history")
+    styles = models.ForeignKey(Style, on_delete=models.CASCADE, blank=True, default="")
+    products = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, default="")
 
+    def __str__(self):
+        return self.name
 
 class PurchasedSerializer(serializers.ModelSerializer):
     class Meta:
@@ -112,9 +131,11 @@ class User(models.Model):
     username = models.CharField(max_length=25)
     password = models.CharField(max_length=25)
     stylist = models.BooleanField(default=False)
-    # cart
-    # purchased
+    cart = models.OneToOneField(Cart, on_delete=models.CASCADE, blank=True, null=True, default="")
+    purchased = models.OneToOneField(Purchased, on_delete=models.CASCADE, blank=True, null=True, default="")
 
+    def __str__(self):
+            return f"{self.last_name}, {self.first_name}"  
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -123,11 +144,14 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class Featurette(models.Model):
+    name = models.CharField(max_length=50, default="featurette")
     style = models.OneToOneField(Style, on_delete=models.CASCADE)
     product = models.OneToOneField(Product, on_delete=models.CASCADE)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     updated_date = models.DateField(default=django.utils.timezone.now)
 
+    def __str__(self):
+        return self.name
 
 class FeaturetteSerializer(serializers.ModelSerializer):
     class Meta:
