@@ -161,6 +161,7 @@ class ProductsView(APIView):
         product = Contact.objects.get(id=contact_id)
         product.name = request.data.get("name")
         product.price = request.data.get("price")
+        product.image = request.data.get("image") # may need to be wrapped.
         product.company = request.data.get("company")
         product.description = request.data.get("description")
         product.quantity = request.data.get("quantity")
@@ -257,5 +258,104 @@ class StylesView(APIView):
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
       
 
-class CartsView():
-    pass
+class CartView (generics.ListCreateAPIView):
+    queryset = Cart.objects.all()
+    serializer_class = GroupSerializer
+
+
+class PurchasedView (generics.ListCreateAPIView):
+    queryset = Purchased.objects.all()
+    serializer_class = GroupSerializer
+    
+
+class UsersView(APIView):
+    """
+    get:
+    Return a list of all existing users 
+    
+    post:
+    Create a new user 
+    
+    put:
+    Update a user
+    
+    delete:
+    Delete a user
+    """
+    @swagger_auto_schema(
+        responses={ status.HTTP_200_OK : UserSerializer(many=True)}
+    )
+    def get(self, request, user_id=None):
+
+        if contact_id is not None:
+            user = User.objects.get(id=user_id)
+            serializer = UserSerializer(user, many=False)
+            return Response(serializer.data)
+        else:
+            users = Contact.objects.all()
+            serializer = ContactSerializer(users, many=True)
+            return Response(serializer.data)
+            
+    @swagger_auto_schema(
+        request_body=UserSerializer,
+        responses={
+            status.HTTP_200_OK : UserSerializer,
+            status.HTTP_400_BAD_REQUEST: openapi.Response(description="Missing information")
+            }
+        )
+    def post(self, request):
+            
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+    
+    @swagger_auto_schema(
+        response={status.HTTP_204_NO_CONTENT}
+        )
+    def delete(self, request, user_id):
+        
+        user = User.objects.get(id=user_id)
+        user.delete()
+        
+        return Response(status=status.HTTP_204_NO_CONTENT)
+      
+    @swagger_auto_schema(
+        responses={
+        status.HTTP_200_OK : UserSerializer,
+        status.HTTP_400_BAD_REQUEST : openapi.Response(description="Missing information")
+        }
+    ) 
+    def put (self, request, user_id):
+        
+        user = User.objects.get(id=user_id)
+        user.image = request.data.get("image")
+        user.first_name = request.data.get("first_name")
+        user.last_name = request.data.get("last_name")
+        user.username = request.data.get("username")
+        user.password = request.data.get("password")
+        user.email = request.data.get("email")
+        user.phone = request.data.get("phone")
+        user.address = request.data.get("address")
+        user.city = request.data.get("city")
+        user.state = request.data.get("state")
+        user.zipcode = request.data.get("zipcode")
+        user.stylist = request.data.get("stylist")
+        user.cart = request.data.get("cart")
+        user.purchased = request.data.get("purchased")
+        user.save()
+
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)    
+
+
+class FeaturetteView (generics.ListCreateAPIView):
+    queryset = Featurette.objects.all()
+    serializer_class = GroupSerializer
+    

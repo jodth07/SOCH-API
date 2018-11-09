@@ -38,7 +38,12 @@ class GroupSerializer(serializers.ModelSerializer):
 # Project models here. 
 
 class Category(models.Model):
+    ITEM_TYPES = (
+        ('S', 'Style'),
+        ('P', 'Product'),
+    )
     name = models.CharField(max_length=100)
+    type = models.CharField(max_length=7, choices=ITEM_TYPES, default='P')
     
     def __str__(self):
         return self.name
@@ -81,7 +86,7 @@ class Style(models.Model):
     duration = models.FloatField()
     created_date = models.DateField(default=django.utils.timezone.now)
     purchased_date = models.DateField(blank=True, default=django.utils.timezone.now)
-    categories = models.ManyToManyField(Category)
+    categories = models.ManyToManyField(Category, blank=True, default="")
 
     def __str__(self):
             return self.name
@@ -121,19 +126,21 @@ class PurchasedSerializer(serializers.ModelSerializer):
 
 
 class User(models.Model):
+    image = models.ImageField(null=True, default="", blank=True)
     first_name = models.CharField(max_length=25)
     last_name = models.CharField(max_length=25)
+    username = models.CharField(max_length=25)
+    password = models.CharField(max_length=25)
+    email = models.CharField(max_length=25)
+    phone = models.CharField(max_length=18, default="001 (123) 123-1234")
     address = models.CharField(max_length=25)
     city = models.CharField(max_length=25)
     state = models.CharField(max_length=25)
     zipcode = models.IntegerField()
-    email = models.CharField(max_length=25)
-    username = models.CharField(max_length=25)
-    password = models.CharField(max_length=25)
     stylist = models.BooleanField(default=False)
     cart = models.OneToOneField(Cart, on_delete=models.CASCADE, blank=True, null=True, default="")
     purchased = models.OneToOneField(Purchased, on_delete=models.CASCADE, blank=True, null=True, default="")
-
+    
     def __str__(self):
             return f"{self.last_name}, {self.first_name}"  
 
