@@ -3,9 +3,13 @@ import json
 from rest_framework import status, generics 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from api.models import Contact, ContactSerializer, Group, GroupSerializer, Category, CategorySerializer, Product, ProductSerializer, Style, StyleSerializer, Cart, CartSerializer, Purchased, PurchasedSerializer, User, UserSerializer, Featurette, FeaturetteSerializer 
+from api.models import Contact, ContactSerializer, Group, GroupSerializer, Category, CategorySerializer, Product, ProductSerializer, Style, StyleSerializer, Cart, CartSerializer, Purchased, PurchasedSerializer, User, UserSerializer, Featurette, FeaturetteSerializer, Image, ImageSerializer 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.parsers import MultiPartParser, FormParser
+from django.core.files import File
+import base64
+from django.http import HttpResponse
 
 class ContactsView(APIView):
     """
@@ -52,9 +56,9 @@ class ContactsView(APIView):
         else:
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
     
-    @swagger_auto_schema(
-        response={status.HTTP_204_NO_CONTENT}
-        )
+    # @swagger_auto_schema(
+    #     response={status.HTTP_204_NO_CONTENT}
+    #     )
     def delete(self, request, contact_id):
         
         contact = Contact.objects.get(id=contact_id)
@@ -64,8 +68,8 @@ class ContactsView(APIView):
       
     @swagger_auto_schema(
         responses={
-        status.HTTP_200_OK : ContactSerializer,
-        status.HTTP_400_BAD_REQUEST : openapi.Response(description="Missing information")
+            status.HTTP_200_OK : ContactSerializer,
+            status.HTTP_400_BAD_REQUEST : openapi.Response(description="Missing information")
         }
     ) 
     def put (self, request, contact_id):
@@ -91,6 +95,91 @@ class GroupView (generics.ListCreateAPIView):
     serializer_class = GroupSerializer
     
 
+class ImageView(APIView):
+    """
+    get:
+    Return a list of all existing images/medias 
+    
+    post:
+    Add new Image
+    
+    put:
+    Update a contact
+    
+    delete:
+    Delete an image
+    """
+    
+    @swagger_auto_schema(
+        responses={ status.HTTP_200_OK : ImageSerializer(many=True)}
+    )
+    def get(self, request, media_id=None):
+        if media_id is not None:
+            try:
+                int(media_id)
+                image = Image.objects.get(id=media_id)
+                # serializer = ImageSerializer(image, many=False)
+                # return Response(serializer.data)
+                
+                image_data = open(image.image.path, "rb").read()
+                return HttpResponse(image_data, content_type="image/png")
+            except:
+                image = Image.objects.get(image=media_id)
+                image_data = open(image.image.path, "rb").read()
+                return HttpResponse(image_data, content_type="image/png")
+
+        else:
+            images = Image.objects.all()
+            serializer = ImageSerializer(images, context={"request": request}, many=True)
+            return Response(serializer.data)
+
+
+    @swagger_auto_schema(
+        request_body=ImageSerializer,
+        responses={
+            status.HTTP_200_OK : ImageSerializer,
+            status.HTTP_400_BAD_REQUEST: openapi.Response(description="Missing information")
+            }
+        )
+    def post(self, request, *args, **kwargs):
+        i_serializer = ImageSerializer(data=request.data)
+        if i_serializer.is_valid():
+            i_serializer.save()
+            return Response(i_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(i_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @swagger_auto_schema(
+        response={status.HTTP_204_NO_CONTENT}
+        )
+    def delete(self, request, media_id):
+    
+        image = Image.objects.get(id=media_id)
+        image.delete()
+        
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @swagger_auto_schema(
+        responses={
+        status.HTTP_200_OK : ImageSerializer,
+        status.HTTP_400_BAD_REQUEST : openapi.Response(description="Missing information")
+        }
+    ) 
+    def put (self, request, media_id):
+        
+        image = Image.objects.get(id=media_id)
+        image.name = request.data.get("name")
+        image.timestamp = request.data.get("timestamp")
+        image.save()
+        
+        serializer = ImageSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+
 class CategoryView (generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -114,9 +203,11 @@ class ProductsView(APIView):
         responses={ status.HTTP_200_OK : ProductSerializer(many=True)}
     )
     def get(self, request, product_id=None):
+
         if product_id is not None:
             product = Product.objects.get(id=product_id)
-            serializer = ProductSerializer(product, many=True)
+            # product.image Image.objects.get(id=product.image)
+            serializer = ProductSerializer(product, many=False)
             return Response(serializer.data)
         else:
             products = Product.objects.all()
@@ -200,7 +291,7 @@ class StylesView(APIView):
     def get(self, request, style_id=None):
         if style_id is not None:
             style = Style.objects.get(id=style_id)
-            serializer = StyleSerializer(style, many=True)
+            serializer = StyleSerializer(style, many=False)
             return Response(serializer.data)
         else:
             styles = Style.objects.all()

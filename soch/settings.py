@@ -140,8 +140,8 @@ STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, 'static'),
 ]
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'staticfiles/media/')
-MEDIA_URL = '/api/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'api/medias/')
+MEDIA_URL = '/api/medias/'
 
 CORS_ORIGIN_ALLOW_ALL = True
 

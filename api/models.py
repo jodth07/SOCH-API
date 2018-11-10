@@ -3,6 +3,8 @@ from django.db import models
 from datetime import datetime
 # from django.utils import timezone
 import django
+from django.core.files import File
+import base64
 
 # Create your models here. 
 
@@ -36,6 +38,21 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 # Project models here. 
+class Image(models.Model):
+    image = models.FileField(blank=False, null=False)
+    name = models.CharField(max_length=20)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name}" 
+
+
+class ImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Image
+        exclude = ()
+
 
 class Category(models.Model):
     ITEM_TYPES = (
@@ -62,9 +79,9 @@ class Product(models.Model):
     description = models.CharField(max_length=200)
     quantity = models.IntegerField()
     num_requested = models.IntegerField(default=1)
-    image = models.ImageField()
-    created_date = models.DateField(default=django.utils.timezone.now)
-    purchased_date = models.DateField(blank=True, default=django.utils.timezone.now)
+    image = models.ForeignKey(Image, on_delete=models.CASCADE, null=True, blank=True, default="")
+    created_date = models.DateField(auto_now_add=True)
+    purchased_date = models.DateField(blank=True, auto_now=True)
     categories = models.ManyToManyField(Category)
 
     def __str__(self):
@@ -82,7 +99,7 @@ class Style(models.Model):
     price = models.FloatField()
     description = models.CharField(max_length=200)
     num_requested = models.IntegerField(default=1)
-    image = models.ImageField()
+    image = models.ForeignKey(Image, on_delete=models.CASCADE, null=True, blank=True, default="")
     duration = models.FloatField()
     created_date = models.DateField(default=django.utils.timezone.now)
     purchased_date = models.DateField(blank=True, default=django.utils.timezone.now)
