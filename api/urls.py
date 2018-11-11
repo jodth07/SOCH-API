@@ -3,6 +3,8 @@ from django.urls import path, include
 from api import views
 urlpatterns = [
     path('categories/', views.CategoryView.as_view(), name="all-categories"),
+    path('categories/<int:category_id>', views.CategoryView.as_view(), name="id-categories"),
+
 
     path('products/<int:product_id>', views.ProductsView.as_view(), name='id-products'),
     path('products/', views.ProductsView.as_view(), name='all-products'),
@@ -16,10 +18,7 @@ urlpatterns = [
     path('users/<int:user_id>', views.UsersView.as_view(), name='id-users'),
     path('users/', views.UsersView.as_view(), name='all-users'),
 
-    # path('images/<int:image_id>', ),
-    # path(r'media/(?P<filename>[^/]+)$', views.MediaView.as_view()),
     path('medias/', views.ImageView.as_view(), name='id-media'),
-    # path('media/<int:media_id>', views.ImageView.as_view(), name='id-media'),
     path('medias/<media_id>', views.ImageView.as_view(), name='id-media'),
 
     path('featurette/', views.FeaturetteView.as_view(), name="all-featurettes"),

@@ -13,7 +13,14 @@ class Group(models.Model):
     
     def __str__(self):
         return self.group
-    
+
+class GroupSerializer(serializers.ModelSerializer): 
+    class Meta: 
+        model = Group 
+        exclude = ()
+   
+
+
 class Contact(models.Model):
     first_name = models.CharField(max_length=50) 
     last_name = models.CharField(max_length=50)
@@ -30,12 +37,7 @@ class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
         exclude = ()
-        
-class GroupSerializer(serializers.ModelSerializer): 
-    class Meta: 
-        model = Group 
-        exclude = ()
-
+   
 
 # Project models here. 
 class Image(models.Model):
@@ -45,7 +47,6 @@ class Image(models.Model):
 
     def __str__(self):
         return f"{self.name}" 
-
 
 class ImageSerializer(serializers.ModelSerializer):
 
@@ -64,7 +65,6 @@ class Category(models.Model):
     
     def __str__(self):
         return self.name
-
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -87,12 +87,13 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-
 class ProductSerializer(serializers.ModelSerializer):
+    image = ImageSerializer()
+    categories = CategorySerializer(many=True)
+
     class Meta:
         model = Product
         exclude = ()
-
 
 class Style(models.Model):
     name = models.CharField(max_length=100)
@@ -109,6 +110,9 @@ class Style(models.Model):
             return self.name
 
 class StyleSerializer(serializers.ModelSerializer):
+    image = ImageSerializer()
+    categories = CategorySerializer(many=True)
+
     class Meta:
         model = Style
         exclude = ()
@@ -116,15 +120,19 @@ class StyleSerializer(serializers.ModelSerializer):
 
 class Cart (models.Model):
     name = models.CharField(max_length=50, default="my cart")
-    styles = models.ForeignKey(Style, on_delete=models.CASCADE, null=True, blank=True, default="")
-    products = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True, default="")
+    styles = models.ManyToManyField(Style, blank=True, default="")
+    products = models.ManyToManyField(Product, blank=True, default="")
 
     def __str__(self):
         return self.name
 
 class CartSerializer(serializers.ModelSerializer):
+    styles = StyleSerializer(many=True)
+    products = ProductSerializer(many=True)
+
     class Meta:
         model = Cart
+        # fields = ('styles', 'products', 'name', 'id' )
         exclude = ()
 
 
@@ -137,9 +145,13 @@ class Purchased(models.Model):
         return self.name
 
 class PurchasedSerializer(serializers.ModelSerializer):
+    styles = StyleSerializer(many=True)
+    products = ProductSerializer(many=True)
+    
     class Meta:
         model = Purchased
         exclude = ()
+
 
 
 class User(models.Model):
@@ -155,6 +167,7 @@ class User(models.Model):
     state = models.CharField(max_length=25)
     zipcode = models.IntegerField()
     stylist = models.BooleanField(default=False)
+    
     cart = models.OneToOneField(Cart, on_delete=models.CASCADE, blank=True, null=True, default="")
     purchased = models.OneToOneField(Purchased, on_delete=models.CASCADE, blank=True, null=True, default="")
     
@@ -162,9 +175,13 @@ class User(models.Model):
             return f"{self.last_name}, {self.first_name}"  
 
 class UserSerializer(serializers.ModelSerializer):
+    purchased = PurchasedSerializer()
+    cart = CartSerializer()
+
     class Meta:
         model = User
         exclude = ()
+
 
 
 class Featurette(models.Model):
@@ -178,6 +195,10 @@ class Featurette(models.Model):
         return self.name
 
 class FeaturetteSerializer(serializers.ModelSerializer):
+    style = StyleSerializer()
+    product = ProductSerializer()
+    user = UserSerializer()
+
     class Meta:
         model = Featurette
         exclude = ()

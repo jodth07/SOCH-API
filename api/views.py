@@ -118,9 +118,6 @@ class ImageView(APIView):
             try:
                 int(media_id)
                 image = Image.objects.get(id=media_id)
-                # serializer = ImageSerializer(image, many=False)
-                # return Response(serializer.data)
-                
                 image_data = open(image.image.path, "rb").read()
                 return HttpResponse(image_data, content_type="image/png")
             except:
@@ -180,9 +177,25 @@ class ImageView(APIView):
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CategoryView (generics.ListCreateAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+class CategoryView (APIView):
+    """
+    get:
+    Return a list of all existing images/medias 
+    
+    """
+    @swagger_auto_schema(
+    responses={ status.HTTP_200_OK : CategorySerializer(many=True)}
+    )
+    def get(self, request, category_id=None):
+
+        if category_id is not None:
+            category = Category.objects.get(id=category_id)
+            serializer = CategorySerializer(category, many=False)
+            return Response(serializer.data)
+        else:
+            categories = Category.objects.all()
+            serializer = CategorySerializer(categories, many=True)
+            return Response(serializer.data)
 
 
 class ProductsView(APIView):
@@ -206,7 +219,6 @@ class ProductsView(APIView):
 
         if product_id is not None:
             product = Product.objects.get(id=product_id)
-            # product.image Image.objects.get(id=product.image)
             serializer = ProductSerializer(product, many=False)
             return Response(serializer.data)
         else:
@@ -351,7 +363,7 @@ class StylesView(APIView):
 
 class CartView (generics.ListCreateAPIView):
     queryset = Cart.objects.all()
-    serializer_class = GroupSerializer
+    serializer_class = CartSerializer
 
 
 class PurchasedView (generics.ListCreateAPIView):
