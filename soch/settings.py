@@ -46,6 +46,12 @@ INSTALLED_APPS = [
     'drf_yasg'
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+    )
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -133,6 +139,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, 'static'),
 ]
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'api/medias/')
+MEDIA_URL = '/api/medias/'
 
 CORS_ORIGIN_ALLOW_ALL = True
 
