@@ -362,13 +362,44 @@ class StylesView(APIView):
       
 
 class CartView (generics.ListCreateAPIView):
-    queryset = Cart.objects.all()
-    serializer_class = CartSerializer
+    """
+    get:
+    Return a list of all existing contacts 
+    """
+    @swagger_auto_schema(
+        responses={ status.HTTP_200_OK : CartSerializer(many=True)}
+    )
+    def get(self, request, cart_id=None):
+
+        if cart_id is not None:
+            cart = Cart.objects.get(id=cart_id)
+            serializer = CartSerializer(cart, many=False)
+            return Response(serializer.data)
+        else:
+            cart = Cart.objects.all()
+            serializer = CartSerializer(cart, many=True)
+            return Response(serializer.data)
+
 
 
 class PurchasedView (generics.ListCreateAPIView):
-    queryset = Purchased.objects.all()
-    serializer_class = GroupSerializer
+    """
+    get:
+    Return a list of all existing contacts 
+    """
+    @swagger_auto_schema(
+        responses={ status.HTTP_200_OK : PurchasedSerializer(many=True)}
+    )
+    def get(self, request, purchased_id=None):
+
+        if purchased_id is not None:
+            purchases = Purchased.objects.get(id=purchased_id)
+            serializer = PurchasedSerializer(purchases, many=False)
+            return Response(serializer.data)
+        else:
+            purchases = Purchased.objects.all()
+            serializer = PurchasedSerializer(purchases, many=True)
+            return Response(serializer.data)
     
 
 class UsersView(APIView):
@@ -390,13 +421,13 @@ class UsersView(APIView):
     )
     def get(self, request, user_id=None):
 
-        if contact_id is not None:
+        if user_id is not None:
             user = User.objects.get(id=user_id)
             serializer = UserSerializer(user, many=False)
             return Response(serializer.data)
         else:
-            users = Contact.objects.all()
-            serializer = ContactSerializer(users, many=True)
+            users = User.objects.all()
+            serializer = UserSerializer(users, many=True)
             return Response(serializer.data)
             
     @swagger_auto_schema(
@@ -458,7 +489,23 @@ class UsersView(APIView):
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)    
 
 
-class FeaturetteView (generics.ListCreateAPIView):
-    queryset = Featurette.objects.all()
-    serializer_class = GroupSerializer
+class FeaturetteView (APIView):
+    """
+    get:
+    Return a list of all existing contacts 
+    """
+    @swagger_auto_schema(
+        responses={ status.HTTP_200_OK : FeaturetteSerializer(many=True)}
+    )
+    def get(self, request, feat_id=None):
+
+        if feat_id is not None:
+            feat = Featurette.objects.get(id=feat_id)
+            serializer = FeaturetteSerializer(feat, many=False)
+            return Response(serializer.data)
+        else:
+            feat = Featurette.objects.all()
+            serializer = FeaturetteSerializer(feat, many=True)
+            return Response(serializer.data)
+
     

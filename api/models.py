@@ -20,7 +20,6 @@ class GroupSerializer(serializers.ModelSerializer):
         exclude = ()
    
 
-
 class Contact(models.Model):
     first_name = models.CharField(max_length=50) 
     last_name = models.CharField(max_length=50)
@@ -95,6 +94,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         exclude = ()
 
+
 class Style(models.Model):
     name = models.CharField(max_length=100)
     price = models.FloatField()
@@ -138,8 +138,8 @@ class CartSerializer(serializers.ModelSerializer):
 
 class Purchased(models.Model):
     name = models.CharField(max_length=50, default="my purchase history")
-    styles = models.ForeignKey(Style, on_delete=models.CASCADE, blank=True, default="")
-    products = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, default="")
+    styles = models.ManyToManyField(Style, blank=True, default="")
+    products = models.ManyToManyField(Product, blank=True, default="")
 
     def __str__(self):
         return self.name
@@ -151,7 +151,6 @@ class PurchasedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Purchased
         exclude = ()
-
 
 
 class User(models.Model):
@@ -181,7 +180,6 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ()
-
 
 
 class Featurette(models.Model):
