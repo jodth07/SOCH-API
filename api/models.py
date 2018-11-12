@@ -56,8 +56,8 @@ class ImageSerializer(serializers.ModelSerializer):
 
 class Category(models.Model):
     ITEM_TYPES = (
-        ('S', 'Style'),
-        ('P', 'Product'),
+        ('Style', 'Style'),
+        ('Style', 'Product'),
     )
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=7, choices=ITEM_TYPES, default='P')
@@ -72,6 +72,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class Product(models.Model):
+    type = models.CharField(default="Product", max_length=10, editable=False)
     name = models.CharField(max_length=100)
     price = models.FloatField()
     company = models.CharField(max_length=100)
@@ -79,8 +80,8 @@ class Product(models.Model):
     quantity = models.IntegerField()
     num_requested = models.IntegerField(default=1)
     image = models.ForeignKey(Image, on_delete=models.CASCADE, null=True, blank=True, default="")
-    created_date = models.DateField(auto_now_add=True)
-    purchased_date = models.DateField(blank=True, auto_now=True)
+    date = models.DateField(auto_now_add=True)
+    purchased_date = models.DateField(blank=True, auto_now=True) # Added date
     categories = models.ManyToManyField(Category)
 
     def __str__(self):
@@ -96,13 +97,14 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class Style(models.Model):
+    type = models.CharField(default="Style", max_length=10, editable=False)
     name = models.CharField(max_length=100)
     price = models.FloatField()
     description = models.CharField(max_length=200)
     num_requested = models.IntegerField(default=1)
     image = models.ForeignKey(Image, on_delete=models.CASCADE, null=True, blank=True, default="")
     duration = models.FloatField()
-    created_date = models.DateField(default=django.utils.timezone.now)
+    date = models.DateField(default=django.utils.timezone.now) # Added date
     purchased_date = models.DateField(blank=True, default=django.utils.timezone.now)
     categories = models.ManyToManyField(Category, blank=True, default="")
 
@@ -154,7 +156,7 @@ class PurchasedSerializer(serializers.ModelSerializer):
 
 
 class User(models.Model):
-    image = models.ImageField(null=True, default="", blank=True)
+    image = models.ForeignKey(Image, on_delete=models.CASCADE, null=True, blank=True, default="")
     first_name = models.CharField(max_length=25)
     last_name = models.CharField(max_length=25)
     username = models.CharField(max_length=25)
@@ -174,6 +176,7 @@ class User(models.Model):
             return f"{self.last_name}, {self.first_name}"  
 
 class UserSerializer(serializers.ModelSerializer):
+    image = ImageSerializer()
     purchased = PurchasedSerializer()
     cart = CartSerializer()
 
@@ -182,11 +185,36 @@ class UserSerializer(serializers.ModelSerializer):
         exclude = ()
 
 
+class Stylist(models.Model):
+    image = models.ForeignKey(Image, on_delete=models.CASCADE, null=True, blank=True, default="")
+    type = models.CharField(default="Stylist", max_length=10, editable=False)
+    name = models.CharField(max_length=25)
+    email = models.CharField(max_length=25)
+    phone = models.CharField(max_length=18, default="001 (123) 123-1234")
+    address = models.CharField(max_length=25)
+    city = models.CharField(max_length=25)
+    state = models.CharField(max_length=25)
+    zipcode = models.IntegerField()
+    description = models.CharField(max_length=200)
+    date = models.DateField(default=django.utils.timezone.now) # Added date
+    
+    
+    
+    def __str__(self):
+            return f"{self.name}"  
+
+class StylistSerializer(serializers.ModelSerializer):
+    image = ImageSerializer()
+  
+    class Meta:
+        model = Stylist
+        exclude = ()
+
 class Featurette(models.Model):
     name = models.CharField(max_length=50, default="featurette")
     style = models.OneToOneField(Style, on_delete=models.CASCADE)
     product = models.OneToOneField(Product, on_delete=models.CASCADE)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    stylist = models.OneToOneField(Stylist, on_delete=models.CASCADE, default=1)
     updated_date = models.DateField(default=django.utils.timezone.now)
 
     def __str__(self):
@@ -195,9 +223,10 @@ class Featurette(models.Model):
 class FeaturetteSerializer(serializers.ModelSerializer):
     style = StyleSerializer()
     product = ProductSerializer()
-    user = UserSerializer()
+    stylist = StylistSerializer()
 
     class Meta:
         model = Featurette
+        fields = ("stylist","style", "product" )
         exclude = ()
 

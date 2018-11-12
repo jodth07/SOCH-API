@@ -130,7 +130,6 @@ class ImageView(APIView):
             serializer = ImageSerializer(images, context={"request": request}, many=True)
             return Response(serializer.data)
 
-
     @swagger_auto_schema(
         request_body=ImageSerializer,
         responses={
@@ -381,7 +380,6 @@ class CartView (generics.ListCreateAPIView):
             return Response(serializer.data)
 
 
-
 class PurchasedView (generics.ListCreateAPIView):
     """
     get:
@@ -504,8 +502,9 @@ class FeaturetteView (APIView):
             serializer = FeaturetteSerializer(feat, many=False)
             return Response(serializer.data)
         else:
-            feat = Featurette.objects.all()
-            serializer = FeaturetteSerializer(feat, many=True)
+            feat_id = 1
+            feat = Featurette.objects.get(id=feat_id)
+            serializer = FeaturetteSerializer(feat, many=False)
             return Response(serializer.data)
 
     
