@@ -198,8 +198,6 @@ class Stylist(models.Model):
     description = models.CharField(max_length=200)
     date = models.DateField(default=django.utils.timezone.now) # Added date
     
-    
-    
     def __str__(self):
             return f"{self.name}"  
 

@@ -427,7 +427,8 @@ class PurchasedView (generics.ListCreateAPIView):
     
 
 class UsersView(APIView):
-    permission_classes = (IsAuthenticated, )
+    # permission_classes = (IsAuthenticated, )
+    permission_classes = (AllowAny,)
     """
     get:
     Return a list of all existing users 
