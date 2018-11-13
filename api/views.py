@@ -10,6 +10,9 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.core.files import File
 import base64
 from django.http import HttpResponse
+# from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated, AllowAny
+
 
 class ContactsView(APIView):
     """
@@ -25,6 +28,9 @@ class ContactsView(APIView):
     delete:
     Delete a contact
     """
+
+    permission_classes = (AllowAny,)
+
     
     @swagger_auto_schema(
         responses={ status.HTTP_200_OK : ContactSerializer(many=True)}
@@ -91,6 +97,9 @@ class ContactsView(APIView):
             
 
 class GroupView (generics.ListCreateAPIView):
+
+    permission_classes = (AllowAny,)
+
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     
@@ -109,7 +118,9 @@ class ImageView(APIView):
     delete:
     Delete an image
     """
-    
+
+    permission_classes = (AllowAny,)
+
     @swagger_auto_schema(
         responses={ status.HTTP_200_OK : ImageSerializer(many=True)}
     )
@@ -182,6 +193,9 @@ class CategoryView (APIView):
     Return a list of all existing images/medias 
     
     """
+
+    permission_classes = (AllowAny,)
+
     @swagger_auto_schema(
     responses={ status.HTTP_200_OK : CategorySerializer(many=True)}
     )
@@ -211,6 +225,9 @@ class ProductsView(APIView):
     delete:
     Delete a product
     """
+
+    permission_classes = (AllowAny,)
+
     @swagger_auto_schema(
         responses={ status.HTTP_200_OK : ProductSerializer(many=True)}
     )
@@ -296,6 +313,9 @@ class StylesView(APIView):
     delete:
     Delete a style
     """
+
+    permission_classes = (AllowAny,)
+
     @swagger_auto_schema(
         responses = {status.HTTP_200_OK : StyleSerializer(many=True)}
     )
@@ -365,6 +385,9 @@ class CartView (generics.ListCreateAPIView):
     get:
     Return a list of all existing contacts 
     """
+
+    permission_classes = (AllowAny,)
+
     @swagger_auto_schema(
         responses={ status.HTTP_200_OK : CartSerializer(many=True)}
     )
@@ -385,6 +408,9 @@ class PurchasedView (generics.ListCreateAPIView):
     get:
     Return a list of all existing contacts 
     """
+
+    permission_classes = (AllowAny,)
+
     @swagger_auto_schema(
         responses={ status.HTTP_200_OK : PurchasedSerializer(many=True)}
     )
@@ -401,6 +427,7 @@ class PurchasedView (generics.ListCreateAPIView):
     
 
 class UsersView(APIView):
+    permission_classes = (IsAuthenticated, )
     """
     get:
     Return a list of all existing users 
@@ -414,6 +441,9 @@ class UsersView(APIView):
     delete:
     Delete a user
     """
+
+    # permission_classes = (AllowAny,)
+
     @swagger_auto_schema(
         responses={ status.HTTP_200_OK : UserSerializer(many=True)}
     )
@@ -492,6 +522,9 @@ class FeaturetteView (APIView):
     get:
     Return a list of all existing contacts 
     """
+
+    permission_classes = (AllowAny,)
+
     @swagger_auto_schema(
         responses={ status.HTTP_200_OK : FeaturetteSerializer(many=True)}
     )
