@@ -4,39 +4,18 @@ from datetime import datetime
 # from django.utils import timezone
 import django
 from django.core.files import File
-import base64
-
-# Create your models here. 
+from django.contrib.auth.models import AbstractUser
 
 class Group(models.Model):
-    group = models.CharField(default="", max_length=50)
+    name = models.CharField(default="", max_length=50)
     
     def __str__(self):
-        return self.group
+        return self.name
 
 class GroupSerializer(serializers.ModelSerializer): 
     class Meta: 
         model = Group 
         exclude = ()
-   
-
-class Contact(models.Model):
-    first_name = models.CharField(max_length=50) 
-    last_name = models.CharField(max_length=50)
-    email = models.CharField(default="example@gmail.com", max_length=50) #
-    phone = models.CharField(default="5612151234", max_length=50) #
-    address = models.CharField(default="here", max_length=50) #
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, default="") #
-    # group = models.ForeignKey(Group, related_name='contacts', on_delete=models.CASCADE) Look up the parameters for foreign key 
-
-    def __str__(self):
-        return f"{self.last_name}, {self.first_name}"    
-
-class ContactSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Contact
-        exclude = ()
-   
 
 # Project models here. 
 class Image(models.Model):
@@ -155,19 +134,20 @@ class PurchasedSerializer(serializers.ModelSerializer):
         exclude = ()
 
 
-class User(models.Model):
+class User(AbstractUser):
     image = models.ForeignKey(Image, on_delete=models.CASCADE, null=True, blank=True, default="")
-    first_name = models.CharField(max_length=25)
-    last_name = models.CharField(max_length=25)
-    username = models.CharField(max_length=25)
-    password = models.CharField(max_length=25)
-    email = models.CharField(max_length=25)
+    # first_name = models.CharField(max_length=25)
+    # last_name = models.CharField(max_length=25)
+    # username = models.CharField(max_length=25)
+    # password = models.CharField(max_length=25)
+    # email = models.CharField(max_length=25)
     phone = models.CharField(max_length=18, default="001 (123) 123-1234")
     address = models.CharField(max_length=25)
     city = models.CharField(max_length=25)
     state = models.CharField(max_length=25)
-    zipcode = models.IntegerField()
+    zipcode = models.IntegerField(blank=True, null=True)
     stylist = models.BooleanField(default=False)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True, default="") #
     
     cart = models.OneToOneField(Cart, on_delete=models.CASCADE, blank=True, null=True, default="")
     purchased = models.OneToOneField(Purchased, on_delete=models.CASCADE, blank=True, null=True, default="")
@@ -194,11 +174,9 @@ class Stylist(models.Model):
     address = models.CharField(max_length=25)
     city = models.CharField(max_length=25)
     state = models.CharField(max_length=25)
-    zipcode = models.IntegerField()
-    description = models.CharField(max_length=200)
+    zipcode = models.IntegerField(blank=True, default=0, null=True)
+    description = models.CharField(max_length=200, blank=True, null=True)
     date = models.DateField(default=django.utils.timezone.now) # Added date
-    
-    
     
     def __str__(self):
             return f"{self.name}"  

@@ -26,11 +26,6 @@ urlpatterns = [
 
     path('featurette/', views.FeaturetteView.as_view(), name="all-featurettes"),
     path('featurette/<int:feat_id>', views.FeaturetteView.as_view(), name="id-featurettes"),
-    
-    path('contacts/', views.ContactsView.as_view(), name='all-contacts'),
-    path('contacts/<int:contact_id>', views.ContactsView.as_view(), name='id-contacts'),
-    
-    path('group/', views.GroupView.as_view(), name="all-group"),
 
     path('login/', obtain_jwt_token),
 ]
