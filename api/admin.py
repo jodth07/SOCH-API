@@ -1,7 +1,7 @@
 from django.contrib import admin
-from api.models import Contact, Product, User, Stylist, Style, Featurette, Purchased, Cart, Category, Image
+from api.models import Product, User, Stylist, Style, Featurette, Purchased, Cart, Category, Image
 # Register your models here.
-admin.site.register(Contact)
+
 admin.site.register(Stylist)
 admin.site.register(Product)
 admin.site.register(User)
