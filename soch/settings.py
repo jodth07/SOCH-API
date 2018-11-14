@@ -44,9 +44,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'api',
-    'drf_yasg'
+    'drf_yasg',
 ]
 
+# AUTH_USER_MODEL = 'api.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (

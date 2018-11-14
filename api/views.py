@@ -3,7 +3,8 @@ import json
 from rest_framework import status, generics 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from api.models import Contact, ContactSerializer, Group, GroupSerializer, Category, CategorySerializer, Product, ProductSerializer, Style, StyleSerializer, Cart, CartSerializer, Purchased, PurchasedSerializer, User, UserSerializer, Featurette, FeaturetteSerializer, Image, ImageSerializer 
+from api.models import Contact, ContactSerializer, Group, GroupSerializer, Category, CategorySerializer, Product, ProductSerializer, Style, StyleSerializer, Cart, CartSerializer, Purchased, PurchasedSerializer, UserSerializer, Featurette, FeaturetteSerializer, Image, ImageSerializer 
+from api.models import User
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -428,6 +429,7 @@ class PurchasedView (generics.ListCreateAPIView):
 
 class UsersView(APIView):
     permission_classes = (IsAuthenticated, )
+    # permission_classes = (AllowAny,)
     """
     get:
     Return a list of all existing users 

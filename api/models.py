@@ -5,6 +5,8 @@ from datetime import datetime
 import django
 from django.core.files import File
 import base64
+from django.contrib.auth.validators import ASCIIUsernameValidator
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here. 
 
@@ -155,13 +157,15 @@ class PurchasedSerializer(serializers.ModelSerializer):
         exclude = ()
 
 
-class User(models.Model):
+class User(AbstractUser):
     image = models.ForeignKey(Image, on_delete=models.CASCADE, null=True, blank=True, default="")
-    first_name = models.CharField(max_length=25)
-    last_name = models.CharField(max_length=25)
-    username = models.CharField(max_length=25)
-    password = models.CharField(max_length=25)
-    email = models.CharField(max_length=25)
+    # first_name = models.CharField(max_length=25)
+    # last_name = models.CharField(max_length=25)
+    # username = models.CharField(max_length=25)
+    # password = models.CharField(max_length=25)
+    # email = models.CharField(max_length=25)
+    user_permissions = models.CharField(max_length=18, default="")
+    groups = models.CharField(max_length=18, default="")
     phone = models.CharField(max_length=18, default="001 (123) 123-1234")
     address = models.CharField(max_length=25)
     city = models.CharField(max_length=25)
