@@ -2,14 +2,15 @@ import jwt
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .serializers import UserSerializer
 from rest_framework import status
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.decorators import api_view, permission_classes
-from .models import User
 from rest_framework_jwt.settings import api_settings
-from soch import settings
 from django.contrib.auth.signals import user_logged_in
+
+# Local imports
+from .models import User, UserSerializer
+from soch import settings
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 
