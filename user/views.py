@@ -1,10 +1,10 @@
 import jwt 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny #, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import UserSerializer
-from rest_framework import status, generics 
-# from rest_framework.utils import jwt_payload_handler
+from rest_framework import status
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.decorators import api_view, permission_classes
 from .models import User
 from rest_framework_jwt.settings import api_settings
