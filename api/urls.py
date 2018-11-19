@@ -10,5 +10,5 @@ urlpatterns = [
 
 # Home
     path('featurette/', FeaturetteView.as_view(), name="all-featurettes"),
-    path('featurette/<int:feat_id>', FeaturetteView.as_view(), name="id-featurettes"),
+    path('featurette/<int:feat_id>', FeaturetteView.as_view(), name="id-featurettes")
 ]

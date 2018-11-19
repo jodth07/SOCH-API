@@ -3,7 +3,7 @@ from rest_framework import serializers
 from images.models import Image, ImageSerializer
 
 class Stylist(models.Model):
-    image = models.ForeignKey(Image, on_delete=models.CASCADE, null=True, blank=True, default="")
+    image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True, default="")
     type = models.CharField(default="Stylist", max_length=10, editable=False)
     name = models.CharField(max_length=25)
     email = models.CharField(max_length=25)

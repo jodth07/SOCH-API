@@ -48,20 +48,18 @@ class PurchasedView (generics.ListCreateAPIView):
     Return a list of all existing contacts 
     """
 
-    permission_classes = (AllowAny,)
-
     @swagger_auto_schema(
         responses={ status.HTTP_200_OK : PurchasedSerializer(many=True)}
     )
-    def get(self, request, purchased_id=None):
+    def get(self, request, purchase_id=None):
 
-        if purchased_id is not None:
-            purchases = Purchased.objects.get(id=purchased_id)
-            serializer = PurchasedSerializer(purchases, many=False)
+        if purchase_id is not None:
+            cart = Purchased.objects.get(id=purchase_id)
+            serializer = PurchasedSerializer(cart, many=False)
             return Response(serializer.data)
         else:
-            purchases = Purchased.objects.all()
-            serializer = PurchasedSerializer(purchases, many=True)
+            cart = Purchased.objects.all()
+            serializer = PurchasedSerializer(cart, many=True)
             return Response(serializer.data)
     
 

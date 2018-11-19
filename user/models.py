@@ -30,7 +30,7 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class Purchased(models.Model):
-    name = models.CharField(max_length=50, default="my purchase history")
+    name = models.CharField(max_length=50, default="Purchase History")
     styles = models.ManyToManyField(Style, blank=True, default="")
     products = models.ManyToManyField(Product, blank=True, default="")
 
@@ -87,7 +87,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now=True)
 
-    image = models.ForeignKey(Image, on_delete=models.CASCADE, null=True, blank=True, default="")
+    image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True, default="")
+    
     phone = models.CharField(max_length=18, default="001 (123) 123-1234")
     address = models.CharField(max_length=25, default="")
     city = models.CharField(max_length=25, default="")

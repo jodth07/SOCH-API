@@ -15,7 +15,7 @@ class Style(models.Model):
     added = models.DateField(auto_now_add=True) # Added date
     purchased_date = models.DateField(blank=True, auto_now=True)
 
-    image = models.ForeignKey(Image, on_delete=models.CASCADE, null=True, blank=True, default="")
+    image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True, default="")
     
     def __str__(self):
             return self.name
