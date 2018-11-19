@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'user',
     'stylists',
     'api',
-    'drf_yasg'
+    'drf_yasg',
+    'rest_framework'
 ]
 
 REST_FRAMEWORK = {
