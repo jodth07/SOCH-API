@@ -2,20 +2,69 @@ import jwt
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.signals import user_logged_in
 
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
 # Local imports
-from .models import User, UserSerializer
+from .models import User, UserSerializer, Cart, CartSerializer, Purchased, PurchasedSerializer
 from soch import settings
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 
 
 # users/views.py
+class CartView (generics.ListCreateAPIView):
+    """
+    get:
+    Return a list of all existing contacts 
+    """
+
+    permission_classes = (AllowAny,)
+
+    @swagger_auto_schema(
+        responses={ status.HTTP_200_OK : CartSerializer(many=True)}
+    )
+    def get(self, request, cart_id=None):
+
+        if cart_id is not None:
+            cart = Cart.objects.get(id=cart_id)
+            serializer = CartSerializer(cart, many=False)
+            return Response(serializer.data)
+        else:
+            cart = Cart.objects.all()
+            serializer = CartSerializer(cart, many=True)
+            return Response(serializer.data)
+
+
+class PurchasedView (generics.ListCreateAPIView):
+    """
+    get:
+    Return a list of all existing contacts 
+    """
+
+    permission_classes = (AllowAny,)
+
+    @swagger_auto_schema(
+        responses={ status.HTTP_200_OK : PurchasedSerializer(many=True)}
+    )
+    def get(self, request, purchased_id=None):
+
+        if purchased_id is not None:
+            purchases = Purchased.objects.get(id=purchased_id)
+            serializer = PurchasedSerializer(purchases, many=False)
+            return Response(serializer.data)
+        else:
+            purchases = Purchased.objects.all()
+            serializer = PurchasedSerializer(purchases, many=True)
+            return Response(serializer.data)
+    
+
 class CreateUserAPIView(APIView):
     # Allow any user (authenticated or not) to access this url 
     permission_classes = (AllowAny,)
@@ -83,3 +132,4 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         serializer.save()
  
         return Response(serializer.data, status=status.HTTP_200_OK)
+

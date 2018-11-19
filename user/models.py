@@ -45,7 +45,7 @@ class PurchasedSerializer(serializers.ModelSerializer):
         model = Purchased
         exclude = ()
         
- 
+        
 class UserManager(BaseUserManager):
  
     def _create_user(self, email, password, **extra_fields):
