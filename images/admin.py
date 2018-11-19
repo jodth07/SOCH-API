@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Featurette
+from .models import Image
 # Register your models here.
 
-admin.site.register(Featurette)
+admin.site.register(Image)
