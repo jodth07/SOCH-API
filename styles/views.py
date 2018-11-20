@@ -7,6 +7,9 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 from .models import Style, StyleSerializer
+from images.models import Image
+
+import traceback
 
 # Create your views here.
     
@@ -14,6 +17,9 @@ class StylesView(APIView):
     """
     get:
     Return a list of all existing styles 
+
+    get: <id>
+    Return an existing style with embedded image
     
     post:
     Create a new style 
@@ -48,19 +54,21 @@ class StylesView(APIView):
         }
     )
     def post(self, request):
-        s_serializer = StyleSerializer(data=request.data)
-        if s_serializer.is_valid():
-            s_serializer.save()
-            return Response(s_serializer.data, status=status.HTTP_200_OK)
+        serializer = StyleSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response(s_serializer.data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
         response = {status.HTTP_204_NO_CONTENT}
     )
     def delete(self, request, style_id):
         style = Style.objects.get(id=style_id)
-        style.delete()
+        image = Image.objects.get(id=style.image.id)
+        image.delete()
         return Response(status.HTTP_204_NO_CONTENT)
 
 
@@ -72,18 +80,8 @@ class StylesView(APIView):
     )
     def put(self, request, style_id):
         style = Style.objects.get(id=style_id)
-        style.name = request.data.get("name")
-        style.price = request.data.get("price")
-        style.description = request.data.get("description")
-        style.num_requested = request.data.get("num_requested")
-        style.image = request.data.get("image")
-        style.duration = request.data.get("duration")
-        style.created_date = request.data.get("created_date")
-        style.purchased_date = request.data.get("purchased_date")
-        style.categories = request.data.get("categories")
-        style.save()
-
-        serializer = StyleSerializer(data=request.data)
+        
+        serializer = StyleSerializer(style, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

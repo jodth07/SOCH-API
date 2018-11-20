@@ -1,8 +1,9 @@
 from django.db import models
-from rest_framework import serializers
+from drf_writable_nested import WritableNestedModelSerializer
 
 # Local imports
 from images.models import Image, ImageSerializer
+
 
 class Style(models.Model):
     type = models.CharField(default="Style", max_length=10, editable=False)
@@ -10,18 +11,22 @@ class Style(models.Model):
     price = models.FloatField()
     description = models.CharField(max_length=200)
     requested = models.IntegerField(default=0)
-    duration = models.FloatField()
     
-    added = models.DateField(auto_now_add=True) # Added date
-    purchased_date = models.DateField(blank=True, auto_now=True)
+    duration = models.IntegerField(default=15)
 
-    image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True, default="")
-    
+    added = models.DateField(auto_now_add=True)
+    purchased_date = models.DateField(blank=True, auto_now=True) # Added date
+
+    # Relationationals 
+    image = models.OneToOneField(Image, on_delete=models.CASCADE, default="")
+   
     def __str__(self):
-            return self.name
+        return self.name
 
-class StyleSerializer(serializers.ModelSerializer):
+
+class StyleSerializer(WritableNestedModelSerializer):
     
+    # Serialized Relationationals 
     image = ImageSerializer()
 
     class Meta:

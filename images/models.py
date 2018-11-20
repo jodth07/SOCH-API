@@ -5,7 +5,7 @@ from drf_base64.fields import Base64ImageField
 
 class Image(models.Model):
     image = models.ImageField(blank=True, null=True)
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=100)
     timestamp = models.DateTimeField(auto_now=True)
 
     def __str__(self):
