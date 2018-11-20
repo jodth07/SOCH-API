@@ -8,6 +8,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.signals import user_logged_in
 
+
+
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
@@ -18,7 +20,6 @@ from soch import settings
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 
 
-# users/views.py
 class CartView (generics.ListCreateAPIView):
     """
     get:
@@ -63,13 +64,24 @@ class PurchasedView (generics.ListCreateAPIView):
             return Response(serializer.data)
     
 
+
+# Users CRUD
 class CreateUserAPIView(APIView):
     # Allow any user (authenticated or not) to access this url 
     permission_classes = (AllowAny,)
  
+    @swagger_auto_schema(
+        request_body=UserSerializer,
+        responses={
+            status.HTTP_200_OK : UserSerializer,
+            status.HTTP_400_BAD_REQUEST: openapi.Response(description="Missing information")
+            }
+    )
     def post(self, request):
         user = request.data
         serializer = UserSerializer(data=user)
+        # serializer.cart = CartSerializer(data=user['cart'])
+        # serializer.purchased = CartSerializer(data=user['purchased'])
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)

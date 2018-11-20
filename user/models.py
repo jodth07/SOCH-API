@@ -9,19 +9,20 @@ from rest_framework import serializers
 from styles.models import Style, StyleSerializer
 from products.models import Product, ProductSerializer
 from images.models import Image, ImageSerializer
+from drf_writable_nested import WritableNestedModelSerializer
 
 
 class Cart (models.Model):
-    name = models.CharField(max_length=50, default="my cart")
+    name = models.CharField(max_length=50, default="my cart", null=True, blank=True)
     styles = models.ManyToManyField(Style, blank=True, default="")
     products = models.ManyToManyField(Product, blank=True, default="")
 
-    def __str__(self):
-        return self.name
+    # def __str__(self):
+    #     return self.name
 
 class CartSerializer(serializers.ModelSerializer):
-    styles = StyleSerializer(many=True)
-    products = ProductSerializer(many=True)
+    styles = StyleSerializer(many=True, required=False)
+    products = ProductSerializer(many=True, required=False)
 
     class Meta:
         model = Cart
@@ -30,16 +31,16 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class Purchased(models.Model):
-    name = models.CharField(max_length=50, default="Purchase History")
+    name = models.CharField(max_length=50, default="Purchase History", blank=True, null=True)
     styles = models.ManyToManyField(Style, blank=True, default="")
     products = models.ManyToManyField(Product, blank=True, default="")
 
-    def __str__(self):
-        return self.name
+    # def __str__(self):
+    #     return self.name
 
 class PurchasedSerializer(serializers.ModelSerializer):
-    styles = StyleSerializer(many=True)
-    products = ProductSerializer(many=True)
+    styles = StyleSerializer(many=True, required=False)
+    products = ProductSerializer(many=True, required=False)
     
     class Meta:
         model = Purchased
@@ -81,23 +82,22 @@ class User(AbstractBaseUser, PermissionsMixin):
  
     """
     email = models.EmailField(max_length=40, unique=True)
-    first_name = models.CharField(max_length=30, blank=True)
-    last_name = models.CharField(max_length=30, blank=True)
+    first_name = models.CharField(max_length=30, blank=False)
+    last_name = models.CharField(max_length=30, blank=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now=True)
 
-    image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True, default="")
-    
-    phone = models.CharField(max_length=18, default="001 (123) 123-1234")
-    address = models.CharField(max_length=25, default="")
-    city = models.CharField(max_length=25, default="")
-    state = models.CharField(max_length=25, default="")
-    zipcode = models.IntegerField(blank=True, null=True)
+    phone = models.CharField(max_length=18, default="001 (123) 123-1234", blank=True)
+    address = models.CharField(max_length=25, default="", blank=True)
+    city = models.CharField(max_length=25, default="", blank=True)
+    state = models.CharField(max_length=25, default="", blank=True)
+    zipcode = models.CharField(blank=True, null=True, max_length=5,)
     stylist = models.BooleanField(default=False)
     
-    cart = models.OneToOneField(Cart, on_delete=models.CASCADE, blank=True, null=True, default="")
-    purchased = models.OneToOneField(Purchased, on_delete=models.CASCADE, blank=True, null=True, default="")
+    image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True, default="")
+    cart = models.OneToOneField(Cart, on_delete=models.CASCADE, blank=True, null=True, default=[])
+    purchased = models.OneToOneField(Purchased, on_delete=models.CASCADE, blank=True, null=True, default=[])
     
     def __str__(self):
             return f"{self.last_name}, {self.first_name}"  
@@ -114,13 +114,18 @@ class User(AbstractBaseUser, PermissionsMixin):
 class UserSerializer(serializers.ModelSerializer):
  
     date_joined = serializers.ReadOnlyField()
-    cart = CartSerializer()
-    purchased = PurchasedSerializer()
-    image = ImageSerializer()
+    cart = CartSerializer(read_only=True, required=False)
+    # purchased = PurchasedSerializer(read_only=True)
+    # image = ImageSerializer(read_only=True)
  
     class Meta(object):
         model = User
-        # fields = ('id', 'email', 'first_name', 'last_name',
-        #           'date_joined', 'password')
         exclude = ()
         extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        cart_data = validated_data.pop('cart')
+        user = User.objects.create(**validated_data)
+        Cart.objects.create(id=user.id, **cart_data)
+        return user
+
