@@ -82,11 +82,11 @@ class ImageView(APIView):
     def put (self, request, media_id):
         
         image = Image.objects.get(id=media_id)
-        image.name = request.data.get("name")
-        image.timestamp = request.data.get("timestamp")
-        image.save()
+        # image.name = request.data.get("name")
+        # image.image = request.data.get("image")
         
-        serializer = ImageSerializer(data=request.data)
+        
+        serializer = ImageSerializer(image, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

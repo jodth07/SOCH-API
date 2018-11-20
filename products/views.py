@@ -6,20 +6,24 @@ from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from .models import Product, ProductSerializer
+from images.models import Image
 
 class ProductsView(APIView):
     """
     get:
-    Return a list of all existing products 
-    
+    Return a list of all existing products
+
+    get: <id> 
+    Return product with embeddeded image object
+
     post:
-    Create a new product 
+    Create a new product, along with create embeded image object 
     
     put:
     Update a product
     
     delete:
-    Delete a product
+    Delete the specified product along with its embedded image object
     """
 
     permission_classes = (AllowAny,)
@@ -57,10 +61,11 @@ class ProductsView(APIView):
     @swagger_auto_schema(
         response={status.HTTP_204_NO_CONTENT}
         )
-    def delete(self, request, contact_id):
+    def delete(self, request, product_id):
         
-        product = Product.objects.get(id=contact_id)
-        product.delete()
+        product = Product.objects.get(id=product_id)
+        image = Image.objects.get(id=product.image.id)
+        image.delete()
         
         return Response(status=status.HTTP_204_NO_CONTENT)
       
@@ -71,23 +76,11 @@ class ProductsView(APIView):
         status.HTTP_400_BAD_REQUEST : openapi.Response(description="Missing information")
         }
     ) 
-    def put (self, request, contact_id):
+    def put (self, request, product_id):
         
-        product = Product.objects.get(id=contact_id)
-        product.name = request.data.get("name")
-        product.price = request.data.get("price")
-        product.image = request.data.get("image") # may need to be wrapped.
-        product.company = request.data.get("company")
-        product.description = request.data.get("description")
-        product.quantity = request.data.get("quantity")
-        product.num_requested = request.data.get("num_requested")
-        product.created_date = request.data.get("created_date")
-        product.purchased_date = request.data.get("purchased_date")
-        product.categories = request.data.get("categories")
-    
-        product.save()
-    
-        serializer = ProductSerializer(data=request.data)
+        product = Product.objects.get(id=product_id)
+        
+        serializer = ProductSerializer(product, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

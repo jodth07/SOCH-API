@@ -1,5 +1,6 @@
 from django.db import models
 from rest_framework import serializers
+from drf_writable_nested import WritableNestedModelSerializer, NestedUpdateMixin
 
 # Local imports
 from images.models import Image, ImageSerializer
@@ -17,13 +18,13 @@ class Product(models.Model):
     purchased_date = models.DateField(blank=True, auto_now=True) # Added date
 
     # Relationationals 
-    image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True, default="")
+    image = models.OneToOneField(Image, on_delete=models.CASCADE, default="")
    
     def __str__(self):
         return self.name
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductSerializer(WritableNestedModelSerializer, NestedUpdateMixin):
     
     # Serialized Relationationals 
     image = ImageSerializer()
