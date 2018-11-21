@@ -72,16 +72,7 @@ class StylistsView(APIView):
     )
     def put(self, request, style_id):
         style = Stylist.objects.get(id=style_id)
-        style.name = request.data.get("name")
-        style.price = request.data.get("price")
-        style.description = request.data.get("description")
-        style.num_requested = request.data.get("num_requested")
-        style.image = request.data.get("image")
-        style.duration = request.data.get("duration")
-        style.created_date = request.data.get("created_date")
-        style.purchased_date = request.data.get("purchased_date")
-        style.categories = request.data.get("categories")
-        style.save()
+    
 
         serializer = StylistSerializer(data=request.data)
         if serializer.is_valid():

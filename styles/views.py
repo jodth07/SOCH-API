@@ -19,16 +19,16 @@ class StylesView(APIView):
     Return a list of all existing styles 
 
     get: <id>
-    Return an existing style with embedded image
+    Return an existing style with its embedded image object
     
     post:
-    Create a new style 
+    Create a new style with its embedded image object
     
     put:
-    Update a style
+    Update a style along with its embedded image object
     
     delete:
-    Delete a style
+    Delete a style along with its embedded image object
     """
 
     permission_classes = (AllowAny,)
