@@ -9,7 +9,6 @@ from drf_yasg.utils import swagger_auto_schema
 from .models import Style, StyleSerializer
 from images.models import Image
 
-import traceback
 
 # Create your views here.
     

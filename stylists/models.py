@@ -22,28 +22,27 @@ class Stylist(models.Model):
     def __str__(self):
             return f"{self.name}"  
 
-class Gallery(models.Model):
-    id = models.OneToOneField(Stylist, on_delete=models.CASCADE, primary_key=True)
-    name = models.CharField(max_length=150, default="My Gallery")
-    images = models.ManyToManyField(Image, blank=True)
 
-    def __str__(self):
-            return f"{self.name}" 
+# class Gallery(models.Model):
+#     id = models.OneToOneField(Stylist, on_delete=models.CASCADE, primary_key=True)
+#     name = models.CharField(max_length=150, default="My Gallery")
+#     images = models.ManyToManyField(Image, blank=True)
 
-class GallerySerializers(WritableNestedModelSerializer):
-    image = ImageSerializer(required=False)
+#     def __str__(self):
+#             return f"{self.name}" 
 
-    class Meta:
-        model = Gallery
-        exclude = ()
+# class GallerySerializer(WritableNestedModelSerializer):
+#     image = ImageSerializer(required=False)
+
+#     class Meta:
+#         model = Gallery
+#         exclude = ()
 
 
 class StylistSerializer(WritableNestedModelSerializer):
     image = ImageSerializer(required=False)
-    gallery = GallerySerializers()
+    # gallery = GallerySerializer(required=False)
 
     class Meta:
         model = Stylist
         exclude = ()
-
-
