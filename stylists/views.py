@@ -72,7 +72,6 @@ class StylistsView(APIView):
     def put(self, request, stylist_id):
         stylist = Stylist.objects.get(id=stylist_id)
     
-
         serializer = StylistSerializer(stylist, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()

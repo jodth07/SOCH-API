@@ -8,13 +8,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.signals import user_logged_in
 
-
-
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 # Local imports
-from .models import User, UserSerializer, Cart, CartSerializer, Purchased, PurchasedSerializer
+from .models import User, UserSerializer, Cart, CartSerializer
 from soch import settings
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
@@ -42,28 +40,47 @@ class CartView (generics.ListCreateAPIView):
             serializer = CartSerializer(cart, many=True)
             return Response(serializer.data)
 
+    @swagger_auto_schema(
+        request_body = CartSerializer,
+        responses = {
+            status.HTTP_200_OK : CartSerializer,
+            status.HTTP_400_BAD_REQUEST: openapi.Response(description="Missing information")
+        }
+    )
+    def post(self, request):
+        serializer = CartSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
-class PurchasedView (generics.ListCreateAPIView):
-    """
-    get:
-    Return a list of all existing contacts 
-    """
 
     @swagger_auto_schema(
-        responses={ status.HTTP_200_OK : PurchasedSerializer(many=True)}
+        response = {status.HTTP_204_NO_CONTENT}
     )
-    def get(self, request, purchase_id=None):
+    def delete(self, request, cart_id):
+        cart = Cart.objects.get(id=cart_id)
+        cart.delete()
+        return Response(status.HTTP_204_NO_CONTENT)
 
-        if purchase_id is not None:
-            cart = Purchased.objects.get(id=purchase_id)
-            serializer = PurchasedSerializer(cart, many=False)
-            return Response(serializer.data)
-        else:
-            cart = Purchased.objects.all()
-            serializer = PurchasedSerializer(cart, many=True)
-            return Response(serializer.data)
+
+    @swagger_auto_schema(
+        responses = {
+            status.HTTP_200_OK : CartSerializer,
+            status.HTTP_400_BAD_REQUEST : openapi.Response(description="Missing information")
+        }
+    )
+    def put(self, request, cart_id):
+        cart = Cart.objects.get(id=cart_id)
     
-
+        serializer = CartSerializer(cart, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+      
 
 # Users CRUD
 class CreateUserAPIView(APIView):
@@ -78,10 +95,8 @@ class CreateUserAPIView(APIView):
             }
     )
     def post(self, request):
-        user = request.data
-        serializer = UserSerializer(data=user)
-        # serializer.cart = CartSerializer(data=user['cart'])
-        # serializer.purchased = CartSerializer(data=user['purchased'])
+        serializer = UserSerializer(data=request.data)
+
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)

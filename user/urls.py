@@ -1,7 +1,7 @@
 # users/urls.py
  
 from django.urls import path
-from .views import CreateUserAPIView, authenticate_user, UserRetrieveUpdateAPIView, CartView, PurchasedView
+from .views import CreateUserAPIView, authenticate_user, UserRetrieveUpdateAPIView, CartView
  
 urlpatterns = [
     path('create/', CreateUserAPIView.as_view(), name="create-user"),
@@ -9,5 +9,5 @@ urlpatterns = [
     path('reup/', UserRetrieveUpdateAPIView.as_view(), name="update-user"),
     
     path('carts/', CartView.as_view(), name="all-carts"),
-    # path('purchased/', PurchasedView.as_view(), 'all-purchased')
+    path('carts/<int:cart_id>', CartView.as_view(), name="all-carts")
 ]
