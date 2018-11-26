@@ -1,4 +1,4 @@
-# API Starter Template (Python & Django REST)
+# API Back End for SOCH (Python & Django REST)
 
 A django-rest boilerplate for 4Geeks Academy students. It features ready-for-deployment on heroku instructions.
 
@@ -19,11 +19,6 @@ $ pyenv install 3.6.6   (this step takes a while)
 $ pyenv global 3.6.6
 ```
 
-2. Install [Django](https://www.djangoproject.com/) and [pipenv](https://pipenv.readthedocs.io/en/latest/) 
-```sh
-$ sudo pip install django pipenv
-```
-
 ##### :warning: Only run these steps 3 & 4 if you are starting the project from scratch
 
 3. Make sure your current folder is empty. 
@@ -32,16 +27,6 @@ $ ls
 ```
 It should show no files or folders.
 
-4. Create a new project using the 4Geeks Academy django-rest-hello template:
-```sh
-$ django-admin startproject <project_name> . --template=https://github.com/4GeeksAcademy/django-rest-hello/archive/master.zip --name=Procfile
-```
-Note: You can replace ``<project_name>`` with your desired project name.
-
-##### :warning: All team members need to run these 5,6,7 steps.
-
-5. Install any default packages (similar to `npm install` when using javascript) and get inside your recently created python envirnoment
-```sh
 $ pipenv install
 
 $ pipenv shell
