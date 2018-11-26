@@ -1,6 +1,4 @@
 from django.contrib import admin
-
-from .models import Featurette
+from api.models import Contact
 # Register your models here.
-
-admin.site.register(Featurette)
+admin.site.register(Contact)
