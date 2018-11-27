@@ -7,6 +7,8 @@ from django.contrib.auth.models import (
 from django.db import transaction, models
 from rest_framework import serializers
 
+from images.models import Image
+
 
 ADDRESSTYPECHOICES = (
     ("Billing", "Billing"),
@@ -64,7 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=18, default="", blank=True)
     
     is_stylist = models.BooleanField(default=False)
-    image = models.ImageField(null=True, blank=True)
+    image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True)
     
     def __str__(self):
         self.name = f"{self.last_name}, {self.first_name}"

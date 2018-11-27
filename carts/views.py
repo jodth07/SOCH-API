@@ -34,10 +34,11 @@ class CartsView(APIView):
     @swagger_auto_schema(
         responses={ status.HTTP_200_OK : CartSerializer(many=True)}
     )
-    def get(self, request, cart_id=None):
+    def get(self, request, _id=None):
 
-        if cart_id is not None:
-            cart = Cart.objects.get(id=cart_id)
+        if _id is not None:
+            # cart = Cart.objects.filter(user=_id)
+            cart = Cart.objects.get(user=_id)
             serializer = CartSerializer(cart, many=False)
             return Response(serializer.data)
         else:
@@ -64,9 +65,9 @@ class CartsView(APIView):
     @swagger_auto_schema(
         response={status.HTTP_204_NO_CONTENT}
         )
-    def delete(self, request, cart_id):
+    def delete(self, request, _id):
         
-        cart = Cart.objects.get(id=cart_id)
+        cart = Cart.objects.get(id=_id)
         cart.delete()
         
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -78,9 +79,9 @@ class CartsView(APIView):
         status.HTTP_400_BAD_REQUEST : openapi.Response(description="Missing information")
         }
     ) 
-    def put (self, request, cart_id):
+    def put (self, request, _id):
         
-        cart = Cart.objects.get(id=cart_id)
+        cart = Cart.objects.get(id=_id)
         
         serializer = CartSerializer(cart, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
@@ -90,7 +91,6 @@ class CartsView(APIView):
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
         
  
-
 class CartItemsView(APIView):
     """
     get:
