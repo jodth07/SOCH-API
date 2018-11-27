@@ -4,5 +4,5 @@ staticfiles
 .env
 *.sqlite3
 Pipfile
-medias/*
+api/medias/*
 .DS_Store
