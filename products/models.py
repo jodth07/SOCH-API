@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from rest_framework import serializers
 
+from images.models import Image
 from users.models import User
 
 TAX_PERCENTAGE = 0.07
@@ -25,7 +26,7 @@ class Product(models.Model):
     price = models.FloatField()
     description = models.CharField(max_length=200)
     
-    duration = models.IntegerField(default=15, blank=True)
+    duration = models.IntegerField(default=0, blank=True)
     
     company = models.CharField(max_length=100, blank=True)
     active = models.BooleanField(default=True)
@@ -34,7 +35,7 @@ class Product(models.Model):
     purchased_date = models.DateField(blank=True, auto_now=True, null=True) # Added date
 
     # Relationationals 
-    image = models.ImageField()
+    image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True)
    
     def __str__(self):
         return self.title

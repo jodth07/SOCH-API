@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 class Image(models.Model):
     image = models.ImageField(blank=True, null=True)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=200)
     timestamp = models.DateTimeField(auto_now=True)
 
     def __str__(self):

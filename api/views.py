@@ -3,7 +3,11 @@ import json
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.models import Contact, ContactSerializer
+from api.models import Featurette, FeaturetteSerializer
 
 class ContactsView(APIView):
     def get(self, request, contact_id=None):
@@ -34,3 +38,25 @@ class ContactsView(APIView):
         
         return Response(status=status.HTTP_204_NO_CONTENT)
         
+class FeaturetteView (APIView):
+    """
+    get:
+    Return a list of all existing contacts 
+    """
+
+    permission_classes = (AllowAny,)
+
+    @swagger_auto_schema(
+        responses={ status.HTTP_200_OK : FeaturetteSerializer(many=True)}
+    )
+    def get(self, request, feat_id=None):
+
+        if feat_id is not None:
+            feat = Featurette.objects.get(id=feat_id)
+            serializer = FeaturetteSerializer(feat, many=False)
+            return Response(serializer.data)
+        else:
+            feat_id = 1
+            feat = Featurette.objects.get(id=feat_id)
+            serializer = FeaturetteSerializer(feat, many=False)
+            return Response(serializer.data)

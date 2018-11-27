@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from api import views
+
 urlpatterns = [
     path('contacts/<int:contact_id>', views.ContactsView.as_view(), name='id-contacts'),
     path('contacts/', views.ContactsView.as_view(), name='all-contacts'),
@@ -9,5 +10,8 @@ urlpatterns = [
     path('products/', include('products.urls')),
     path('carts/', include('carts.urls')),
     path('orders/', include('orders.urls')),
-    path('medias/', include('images.urls'))
+    path('medias/', include('images.urls')),
+
+    path('featurette/', views.FeaturetteView.as_view(), name="all-featurettes"),
+    path('featurette/<int:feat_id>', views.FeaturetteView.as_view(), name="id-featurettes")
 ]
