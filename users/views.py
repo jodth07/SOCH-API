@@ -130,11 +130,11 @@ class AddressView(APIView):
     @swagger_auto_schema(
         responses={ status.HTTP_200_OK : AddressSerializer(many=True)}
     )
-    def get(self, request, address_id=None):
+    def get(self, request, _id=None):
 
-        if address_id is not None:
-            address = Address.objects.get(id=address_id)
-            serializer = AddressSerializer(address, many=False)
+        if _id is not None:
+            address = Address.objects.filter(user=_id)
+            serializer = AddressSerializer(address, many=True)
             return Response(serializer.data)
         else:
             addresss = Address.objects.all()
@@ -160,9 +160,9 @@ class AddressView(APIView):
     @swagger_auto_schema(
         response={status.HTTP_204_NO_CONTENT}
         )
-    def delete(self, request, address_id):
+    def delete(self, request, _id):
         
-        address = Address.objects.get(id=address_id)
+        address = Address.objects.get(id=_id)
         address.delete()
         
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -174,9 +174,9 @@ class AddressView(APIView):
         status.HTTP_400_BAD_REQUEST : openapi.Response(description="Missing information")
         }
     ) 
-    def put (self, request, address_id):
+    def put (self, request, _id):
         
-        address = Address.objects.get(id=address_id)
+        address = Address.objects.get(id=_id)
         
         serializer = AddressSerializer(address, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):

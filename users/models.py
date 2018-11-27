@@ -10,7 +10,7 @@ from rest_framework import serializers
 
 ADDRESSTYPECHOICES = (
     ("Billing", "Billing"),
-    ("Mailing", "Mailing"),
+    ("Shipping", "Shipping"),
     ("Shop", "Shop")
 )
 
@@ -91,12 +91,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    a_type = models.CharField(max_length=10, choices=ADDRESSTYPECHOICES, default="Mailing") 
+    a_type = models.CharField(max_length=10, choices=ADDRESSTYPECHOICES, default="Shipping") 
     street = models.CharField(max_length=25)
     city = models.CharField(max_length=25)
     state = models.CharField(max_length=25)
     zipcode = models.CharField(max_length=10)
-    Country = models.CharField(max_length=15, default="United States")
+    Country = models.CharField(max_length=15, default="United States", blank=True)
 
     def __str__(self):
         return self.street
