@@ -6,8 +6,9 @@ from django.contrib.auth.models import (
 )
 from django.db import transaction, models
 from rest_framework import serializers
+from django.db.models.signals import post_save
 
-from images.models import Image
+from images.models import Image, Gallery
 
 
 ADDRESSTYPECHOICES = (
@@ -89,6 +90,57 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         exclude = ()
         extra_kwargs = {'password': {'write_only': True}}
+
+class Stylist(models.Model):
+    category = models.CharField(max_length=8, choices=CATEGORY_CHOICES, default="Costumer")
+    email = models.EmailField(max_length=40, unique=True)
+    first_name = models.CharField(max_length=30, blank=False)
+    last_name = models.CharField(max_length=30, blank=False)
+    title = models.CharField(max_length=120, blank=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    date_joined = models.DateTimeField(auto_now=True)
+    description = models.CharField(max_length=200, default="")
+    phone = models.CharField(max_length=18, default="", blank=True)
+    is_stylist = models.BooleanField(default=True)
+    
+    # Relationationals 
+    image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    gallery = models.OneToOneField(Gallery, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return self.title  
+
+
+def user_post_saved_receiver(sender, instance, created, *args, **kwargs):
+    user = instance
+    if user.is_stylist:
+        stylists = user.stylist_set.all()
+        if stylists.count() == 0:
+            new_var = Stylist()
+            new_var.user = user
+            new_var.first_name = user.first_name
+            new_var.last_name = user.last_name
+            new_var.category = user.category
+            new_var.title = user.first_name 
+            new_var.image = user.image
+            gallery = Gallery()
+            gallery.save()
+            new_var.gallery = gallery
+            new_var.phone = user.phone
+            new_var.email = user.email
+            new_var.save()
+
+post_save.connect(user_post_saved_receiver, sender=User)
+
+
+class StylistSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Stylist
+        exclude = ()
+
 
 
 class Address(models.Model):
