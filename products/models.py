@@ -40,7 +40,7 @@ class Product(models.Model):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    image = ImageSerializer()
+    # image = ImageSerializer()
     
     class Meta:
         model = Product
@@ -102,12 +102,13 @@ def product_post_saved_receiver(sender, instance, created, *args, **kwargs):
         new_var.image = product.image
         new_var.save()
 
+
 post_save.connect(product_post_saved_receiver, sender=Product)
 
 
 class VariationSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model : Variation
-        exclude : ()
+        model = Variation
+        exclude = ()
 
