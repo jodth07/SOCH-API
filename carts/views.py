@@ -37,8 +37,8 @@ class CartsView(APIView):
     def get(self, request, _id=None):
 
         if _id is not None:
-            # cart = Cart.objects.filter(user=_id)
-            cart = Cart.objects.get(user=_id)
+            # cart = Cart.objects.filter(user=_id, purchased=False)
+            cart = Cart.objects.get(user=_id, purchased=False)
             serializer = CartSerializer(cart, many=False)
             return Response(serializer.data)
         else:

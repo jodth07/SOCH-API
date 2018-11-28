@@ -8,7 +8,7 @@ from django.db.models.signals import post_save, pre_save, post_delete
 from rest_framework import serializers
 
 from users.models import User
-from products.models import Product, Variation
+from products.models import Product, Variation, VariationSerializer, ProductSerializer
 
 TAX_PERCENTAGE = 0.07
 
@@ -47,6 +47,7 @@ post_save.connect(cart_item_post_save_receiver, sender=CartItem)
 post_delete.connect(cart_item_post_save_receiver, sender=CartItem)
 
 class CartItemSerializer(serializers.ModelSerializer):
+    product = ProductSerializer()
     
     class Meta:
         model = CartItem

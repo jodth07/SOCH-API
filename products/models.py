@@ -7,7 +7,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from rest_framework import serializers
 
-from images.models import Image
+from images.models import Image, ImageSerializer
 from users.models import User
 
 TAX_PERCENTAGE = 0.07
@@ -19,7 +19,6 @@ CATEGORY_CHOICES = (
 
 
 class Product(models.Model):
-    active = models.BooleanField(default=True)
     category = models.CharField(max_length=7, choices=CATEGORY_CHOICES)
 
     title = models.CharField(max_length=100)
@@ -32,8 +31,7 @@ class Product(models.Model):
     active = models.BooleanField(default=True)
 
     added = models.DateField(auto_now_add=True, blank=True, null=True)
-    purchased_date = models.DateField(blank=True, auto_now=True, null=True) # Added date
-
+    
     # Relationationals 
     image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True)
    
@@ -42,6 +40,7 @@ class Product(models.Model):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    image = ImageSerializer()
     
     class Meta:
         model = Product
@@ -49,11 +48,25 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class Variation(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    category = models.CharField(max_length=7, choices=CATEGORY_CHOICES, default="Product")
+    
     title = models.CharField(max_length=120, blank=True)
     price = models.DecimalField(decimal_places=2, max_digits=20)
-    sale_price = models.DecimalField(decimal_places=2, max_digits=20, null=True, blank=True)
+    description = models.CharField(max_length=200, default="")
+    
+    duration = models.IntegerField(default=0, blank=True)
+    
+    company = models.CharField(max_length=100, blank=True, default="")
     active = models.BooleanField(default=True)
+    
+    added = models.DateField(auto_now_add=True, blank=True, null=True)
+    purchased_date = models.DateField(blank=True, auto_now=True, null=True) # Added date
+
+    # Relationationals 
+    image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True)
+   
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    sale_price = models.DecimalField(decimal_places=2, max_digits=20, null=True, blank=True)
     inventory = models.IntegerField(null=True, blank=True)
     discount = models.DecimalField(decimal_places=2, max_digits=2, null=True, blank=True) 
 
@@ -72,14 +85,22 @@ class Variation(models.Model):
             return self.price
 
 def product_post_saved_receiver(sender, instance, created, *args, **kwargs):
-	product = instance
-	variations = product.variation_set.all()
-	if variations.count() == 0:
-		new_var = Variation()
-		new_var.product = product
-		new_var.title = product.title
-		new_var.price = product.price
-		new_var.save()
+    product = instance
+    variations = product.variation_set.all()
+    if variations.count() == 0:
+        new_var = Variation()
+        new_var.product = product
+        new_var.category = product.category
+
+        new_var.title = product.title
+        new_var.price = product.price
+        new_var.description = product.description
+        new_var.duration = product.duration
+        new_var.company = product.company
+        new_var.active = product.active
+        new_var.added = product.added
+        new_var.image = product.image
+        new_var.save()
 
 post_save.connect(product_post_saved_receiver, sender=Product)
 
