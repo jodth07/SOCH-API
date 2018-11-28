@@ -13,6 +13,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 # Local imports
 from .models import User, UserSerializer
+from .models import Stylist, StylistSerializer
 from .models import Address, AddressSerializer
 from soch import settings
 
@@ -105,8 +106,6 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
  
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-
 class AddressView(APIView):
     """
     get:
@@ -185,3 +184,83 @@ class AddressView(APIView):
         else:
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
   
+class StylistsView(APIView):
+    """
+    get:
+    Return a list of all existing stylists
+
+    get: <id> 
+    Return stylist with embeddeded image object
+
+    post:
+    Create a new stylist, along with create embeded image object 
+    
+    put:
+    Update a stylist
+    
+    delete:
+    Delete the specified stylist along with its embedded image object
+    """
+
+    permission_classes = (AllowAny,)
+
+    @swagger_auto_schema(
+        responses={ status.HTTP_200_OK : StylistSerializer(many=True)}
+    )
+    def get(self, request, _id=None):
+
+        if _id is not None:
+            # stylist = Stylist.objects.filter(user=_id, purchased=False)
+            stylist = Stylist.objects.get(user=_id)
+            serializer = StylistSerializer(stylist, many=False)
+            return Response(serializer.data)
+        else:
+            stylists = Stylist.objects.all()
+            serializer = StylistSerializer(stylists, many=True)
+            return Response(serializer.data)
+
+    @swagger_auto_schema(
+        request_body=StylistSerializer,
+        responses={
+            status.HTTP_200_OK : StylistSerializer,
+            status.HTTP_400_BAD_REQUEST: openapi.Response(description="Missing information")
+            }
+        )
+    def post(self, request):
+        serializer = StylistSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+
+    @swagger_auto_schema(
+        response={status.HTTP_204_NO_CONTENT}
+        )
+    def delete(self, request, _id):
+        
+        stylist = Stylist.objects.get(id=_id)
+        stylist.delete()
+        
+        return Response(status=status.HTTP_204_NO_CONTENT)
+      
+    
+    @swagger_auto_schema(
+        responses={
+        status.HTTP_200_OK : StylistSerializer,
+        status.HTTP_400_BAD_REQUEST : openapi.Response(description="Missing information")
+        }
+    ) 
+    def put (self, request, _id):
+        
+        stylist = Stylist.objects.get(id=_id)
+        
+        serializer = StylistSerializer(stylist, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+        
+ 
