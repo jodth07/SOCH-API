@@ -19,17 +19,14 @@ CATEGORY_CHOICES = (
 
 
 class Product(models.Model):
+    title = models.CharField(max_length=100)
     category = models.CharField(max_length=7, choices=CATEGORY_CHOICES)
 
-    title = models.CharField(max_length=100)
-    price = models.FloatField()
     description = models.CharField(max_length=200)
-    
     duration = models.IntegerField(default=0, blank=True)
-    
+    price = models.DecimalField(decimal_places=2, max_digits=20)
     company = models.CharField(max_length=100, blank=True)
-    active = models.BooleanField(default=True)
-
+    
     added = models.DateField(auto_now_add=True, blank=True, null=True)
     
     # Relationationals 
@@ -48,16 +45,15 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class Variation(models.Model):
+    title = models.CharField(max_length=120, blank=True)
     category = models.CharField(max_length=7, choices=CATEGORY_CHOICES, default="Product")
     
-    title = models.CharField(max_length=120, blank=True)
     price = models.DecimalField(decimal_places=2, max_digits=20)
     description = models.CharField(max_length=200, default="")
     
     duration = models.IntegerField(default=0, blank=True)
     
     company = models.CharField(max_length=100, blank=True, default="")
-    active = models.BooleanField(default=True)
     
     added = models.DateField(auto_now_add=True, blank=True, null=True)
     purchased_date = models.DateField(blank=True, auto_now=True, null=True) # Added date
@@ -97,11 +93,9 @@ def product_post_saved_receiver(sender, instance, created, *args, **kwargs):
         new_var.description = product.description
         new_var.duration = product.duration
         new_var.company = product.company
-        new_var.active = product.active
         new_var.added = product.added
         new_var.image = product.image
         new_var.save()
-
 
 post_save.connect(product_post_saved_receiver, sender=Product)
 

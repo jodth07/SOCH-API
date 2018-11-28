@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.db import models
 
-from users.models import User, UserSerializer
+from users.models import Stylist, StylistSerializer
 from products.models import Product, ProductSerializer
 from products.models import Variation, VariationSerializer
 
@@ -24,7 +24,7 @@ class Featurette(models.Model):
 
     # model relations
     product = models.OneToOneField(Product, on_delete=models.SET_NULL, default=1, null=True)
-    stylist = models.OneToOneField(User, on_delete=models.SET_NULL, default=1, null=True)
+    stylist = models.OneToOneField(Stylist, on_delete=models.SET_NULL, default=1, null=True)
     style = models.OneToOneField(Variation, on_delete=models.SET_NULL, default=1, null=True)
 
     def __str__(self):
@@ -34,7 +34,7 @@ class Featurette(models.Model):
 class FeaturetteSerializer(serializers.ModelSerializer):
 
     # serializers for relations to be included
-    stylist = UserSerializer()
+    stylist = StylistSerializer()
     product = ProductSerializer()
     style = VariationSerializer()
 

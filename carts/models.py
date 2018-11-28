@@ -97,7 +97,7 @@ pre_save.connect(do_tax_and_total_receiver, sender=Cart)
 
 
 class CartSerializer(serializers.ModelSerializer):
-    
+    # products = VariationSerializer()
     class Meta:
         model = Cart
         exclude = ()
