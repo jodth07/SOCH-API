@@ -8,7 +8,7 @@ from django.db import transaction, models
 from rest_framework import serializers
 from django.db.models.signals import post_save
 
-from images.models import Image #, Gallery
+from images.models import Image, Gallery
 
 
 ADDRESSTYPECHOICES = (
@@ -107,7 +107,7 @@ class Stylist(models.Model):
     # Relationationals 
     image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
-    # gallery = models.OneToOneField(Gallery, on_delete=models.SET_NULL, null=True, blank=True)
+    gallery = models.OneToOneField(Gallery, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.title  
@@ -124,10 +124,11 @@ def user_post_saved_receiver(sender, instance, created, *args, **kwargs):
             new_var.last_name = user.last_name
             new_var.category = user.category
             new_var.title = user.first_name 
-            new_var.description = user.description
             new_var.image = user.image
+            gallery = Gallery()
+            gallery.save()
+            new_var.gallery = gallery
             new_var.phone = user.phone
-            new_var.description = user.description
             new_var.email = user.email
             new_var.save()
 
