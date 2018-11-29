@@ -117,8 +117,10 @@ class CartItemsView(APIView):
     def get(self, request, cart_item_id=None):
 
         if cart_item_id is not None:
-            cart_item = CartItem.objects.get(id=cart_item_id)
-            serializer = CartItemSerializer(cart_item, many=False)
+            # cart_item = CartItem.objects.get(id=cart_item_id)
+            cart_item = CartItem.objects.filter(cart=cart_item_id)
+
+            serializer = CartItemSerializer(cart_item, many=True)
             return Response(serializer.data)
         else:
             cart_items = CartItem.objects.all()
