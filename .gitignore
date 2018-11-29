@@ -5,4 +5,5 @@ staticfiles
 *.sqlite3
 Pipfile
 api/medias/*
+api/.DS_Store
 .DS_Store
