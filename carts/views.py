@@ -7,7 +7,8 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 # local imports
-from .models import Cart, CartItemSerializer, CartSerializer, CartItem
+from .models import Cart, CartItemSerializer, CartSerializer, CartItem, CartItemCreateUpdateSerializer
+from products.models import Product
 
 
 
@@ -117,7 +118,7 @@ class CartItemsView(APIView):
     def get(self, request, cart_item_id=None):
 
         if cart_item_id is not None:
-            # cart_item = CartItem.objects.get(id=cart_item_id)
+            
             cart_item = CartItem.objects.filter(cart=cart_item_id)
 
             serializer = CartItemSerializer(cart_item, many=True)
@@ -128,14 +129,14 @@ class CartItemsView(APIView):
             return Response(serializer.data)
 
     @swagger_auto_schema(
-        request_body=CartItemSerializer,
+        request_body=CartItemCreateUpdateSerializer,
         responses={
-            status.HTTP_200_OK : CartItemSerializer,
+            status.HTTP_200_OK : CartItemCreateUpdateSerializer,
             status.HTTP_400_BAD_REQUEST: openapi.Response(description="Missing information")
             }
         )
     def post(self, request):
-        serializer = CartItemSerializer(data=request.data)
+        serializer = CartItemCreateUpdateSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -156,15 +157,14 @@ class CartItemsView(APIView):
     
     @swagger_auto_schema(
         responses={
-        status.HTTP_200_OK : CartItemSerializer,
+        status.HTTP_200_OK : CartItemCreateUpdateSerializer,
         status.HTTP_400_BAD_REQUEST : openapi.Response(description="Missing information")
         }
     ) 
     def put (self, request, cart_item_id):
         
         cart_item = CartItem.objects.get(id=cart_item_id)
-        
-        serializer = CartItemSerializer(cart_item, data=request.data, partial=True)
+        serializer = CartItemCreateUpdateSerializer(cart_item, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

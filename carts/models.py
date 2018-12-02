@@ -53,6 +53,11 @@ class CartItemSerializer(serializers.ModelSerializer):
         model = CartItem
         exclude = ()
 
+class CartItemCreateUpdateSerializer(serializers.ModelSerializer):    
+    class Meta:
+        model = CartItem
+        exclude = ()
+
 
 class Cart(models.Model):
     user = models.ForeignKey(User,null=True, blank=True, on_delete=models.CASCADE)
@@ -97,7 +102,7 @@ pre_save.connect(do_tax_and_total_receiver, sender=Cart)
 
 
 class CartSerializer(serializers.ModelSerializer):
-    # products = VariationSerializer()
+
     class Meta:
         model = Cart
         exclude = ()
