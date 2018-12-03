@@ -136,6 +136,7 @@ class CartItemsView(APIView):
             }
         )
     def post(self, request):
+        
         serializer = CartItemCreateUpdateSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
