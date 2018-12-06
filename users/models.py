@@ -63,7 +63,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=30, blank=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    date_joined = models.DateTimeField(auto_now=True)
+    date_joined = models.DateField(auto_now=True)
     phone = models.CharField(max_length=18, default="", blank=True)
     
     is_stylist = models.BooleanField(default=False)
@@ -92,6 +92,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
 class Stylist(models.Model):
+    id = models.IntegerField(primary_key=True, default=1)
     category = models.CharField(max_length=8, choices=CATEGORY_CHOICES, default="Costumer")
     email = models.EmailField(max_length=40, unique=True)
     first_name = models.CharField(max_length=30, blank=False)
@@ -99,14 +100,14 @@ class Stylist(models.Model):
     title = models.CharField(max_length=120, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    date_joined = models.DateTimeField(auto_now=True)
+    date_joined = models.DateField(auto_now_add=True)
     description = models.CharField(max_length=200, default="")
     phone = models.CharField(max_length=18, default="", blank=True)
     is_stylist = models.BooleanField(default=True)
     
     # Relationationals 
     image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     gallery = models.OneToOneField(Gallery, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
@@ -120,6 +121,7 @@ def user_post_saved_receiver(sender, instance, created, *args, **kwargs):
         if stylists.count() == 0:
             new_var = Stylist()
             new_var.user = user
+            new_var.id = user.id
             new_var.first_name = user.first_name
             new_var.last_name = user.last_name
             new_var.category = user.category

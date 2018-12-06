@@ -12,6 +12,5 @@ urlpatterns = [
     path('orders/', include('orders.urls')),
     path('medias/', include('images.urls')),
 
-    path('featurette/', views.FeaturetteView.as_view(), name="all-featurettes"),
-    path('featurette/<int:feat_id>', views.FeaturetteView.as_view(), name="id-featurettes")
+    path('featurette/', views.FeaturetteView.as_view(), name="all-featurettes")
 ]

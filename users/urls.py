@@ -12,6 +12,6 @@ urlpatterns = [
     path('address/', AddressView.as_view(), name="all-addresses" ),
     path('address/<int:_id>', AddressView.as_view(), name="all-addresses" ),
 
-    path('stylist/', StylistsView.as_view(), name="all-addresses" ),
-    path('stylist/<int:_id>', StylistsView.as_view(), name="all-addresses" )
+    path('stylists/', StylistsView.as_view(), name="all-addresses" ),
+    path('stylists/<int:_id>', StylistsView.as_view(), name="all-addresses" )
 ]

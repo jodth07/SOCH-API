@@ -34,7 +34,7 @@ class Order(models.Model):
 	user = models.ForeignKey(UserCheckout, on_delete=models.SET_NULL, null=True)
 	billing_address = models.ForeignKey(Address, on_delete=models.SET_NULL, related_name='billing_address', null=True)
 	shipping_address = models.ForeignKey(Address, on_delete=models.SET_NULL, related_name='shipping_address', null=True)
-	shipping_total_price = models.DecimalField(max_digits=50, decimal_places=2, default=5.99)
+	shipping_total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 	order_total = models.DecimalField(max_digits=50, decimal_places=2, blank=True )
 	order_id = models.CharField(max_length=20, null=True, blank=True)
 
@@ -64,6 +64,7 @@ def order_pre_save(sender, instance, *args, **kwargs):
 	instance.order_total = order_total
 
 pre_save.connect(order_pre_save, sender=Order)
+
 class OrderSerializer(serializers.ModelSerializer):
     
     class Meta:

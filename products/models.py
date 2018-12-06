@@ -52,7 +52,7 @@ class Variation(models.Model):
 
     # Relationationals 
     image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True)
-    product = models.ForeignKey(Product, on_delete=models.PROTECT, primary_key=True, unique=True)
+    product = models.OneToOneField(Product, on_delete=models.PROTECT, primary_key=True, unique=True)
 
     sale_price = models.DecimalField(decimal_places=2, max_digits=20, null=True, blank=True)
     inventory = models.IntegerField(null=True, blank=True)

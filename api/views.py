@@ -50,13 +50,7 @@ class FeaturetteView (APIView):
         responses={ status.HTTP_200_OK : FeaturetteSerializer(many=True)}
     )
     def get(self, request, feat_id=None):
-
-        if feat_id is not None:
-            feat = Featurette.objects.get(id=feat_id)
-            serializer = FeaturetteSerializer(feat, many=False)
-            return Response(serializer.data)
-        else:
-            feat_id = 1
-            feat = Featurette.objects.get(id=feat_id)
+        
+            feat = Featurette.objects.last()
             serializer = FeaturetteSerializer(feat, many=False)
             return Response(serializer.data)

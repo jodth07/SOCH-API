@@ -191,10 +191,7 @@ class StylistsView(APIView):
 
     get: <id> 
     Return stylist with embeddeded image object
-
-    post:
-    Create a new stylist, along with create embeded image object 
-    
+ 
     put:
     Update a stylist
     
@@ -218,21 +215,6 @@ class StylistsView(APIView):
             stylists = Stylist.objects.all()
             serializer = StylistSerializer(stylists, many=True)
             return Response(serializer.data)
-
-    @swagger_auto_schema(
-        request_body=StylistSerializer,
-        responses={
-            status.HTTP_200_OK : StylistSerializer,
-            status.HTTP_400_BAD_REQUEST: openapi.Response(description="Missing information")
-            }
-        )
-    def post(self, request):
-        serializer = StylistSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
     @swagger_auto_schema(
