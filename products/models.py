@@ -14,19 +14,20 @@ CATEGORY_CHOICES = (
 )
 
 class Product(models.Model):
-    title = models.CharField(max_length=100)
+    
     category = models.CharField(max_length=7, choices=CATEGORY_CHOICES)
-
+    title = models.CharField(max_length=100)
     description = models.CharField(max_length=200)
     duration = models.IntegerField(default=0, blank=True)
-    price = models.DecimalField(decimal_places=2, max_digits=20)
     company = models.CharField(max_length=100, blank=True)
-    
     added = models.DateField(auto_now_add=True, blank=True, null=True)
+    
+    
     
     # Relationationals 
     image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True)
-   
+    price = models.DecimalField(decimal_places=2, max_digits=20)
+    
     def __str__(self):
         return self.title
 
@@ -39,6 +40,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class Variation(models.Model):
+
     title = models.CharField(max_length=120, blank=True)
     category = models.CharField(max_length=7, choices=CATEGORY_CHOICES, default="Product")
     price = models.DecimalField(decimal_places=2, max_digits=20)
@@ -52,7 +54,8 @@ class Variation(models.Model):
 
     # Relationationals 
     image = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True, blank=True)
-    product = models.OneToOneField(Product, on_delete=models.PROTECT, primary_key=True, unique=True)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    id = models.CharField(max_length=200, primary_key=True, unique=True)
 
     sale_price = models.DecimalField(decimal_places=2, max_digits=20, null=True, blank=True)
     inventory = models.IntegerField(null=True, blank=True)
@@ -77,7 +80,9 @@ def product_post_saved_receiver(sender, instance, created, *args, **kwargs):
     variations = product.variation_set.all()
     if variations.count() == 0:
         new_var = Variation()
+        
         new_var.product = product
+        new_var.id = product.id
         new_var.category = product.category
 
         new_var.title = product.title

@@ -60,26 +60,25 @@ class CartItemCreateUpdateSerializer(serializers.ModelSerializer):
 class Cart(models.Model):
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     products = models.ManyToManyField(Variation, through=CartItem)
-
-    purchased = models.BooleanField(default=False)
-    purchase_date = models.DateField(null=True, default=None )
-    
     updated = models.DateField(auto_now=True)
-      
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     tax_percentage  = models.DecimalField(max_digits=10, decimal_places=5, default=0.065)
     tax_total = models.DecimalField(max_digits=50, decimal_places=2, default=0.00)
     total = models.DecimalField(max_digits=50, decimal_places=2, default=0.00)
-
-    # payment_token = models.CharField(max_length=500, null=True, default=None)
-    # payment_id = models.CharField(max_length=500, null=True, default=None)
-
-    def set_purchase_date(self):
-        if self.purchased:
-            self.purchase_date = datetime.now
+# After Purchased
+    payment_token = models.CharField(max_length=500, null=True, default=None) # paymentToken
+    payment_id = models.CharField(max_length=500, null=True, default=None) # paymentID
+    payer_id = models.CharField(max_length=500, null=True, default=None) # payerID
+    purchased = models.BooleanField(default=False) # paid: true
+    purchase_date = models.DateField(null=True, default=None, blank=True ) # for history ordering
 
     def __str__(self):
         return self.user.first_name + "_" + str(self.id)
+
+    def set_puchase_date(self):
+        if self.purchased and self.purchase_date is None:
+            self.purchase_date = datetime.now()
+            self.save()
 
     def update_subtotal(self):
         subtotal = 0
@@ -100,23 +99,30 @@ def do_tax_and_total_receiver(sender, instance, *args, **kwargs):
 
 pre_save.connect(do_tax_and_total_receiver, sender=Cart)
 
-
 def user_post_saved_receiver(sender, instance, created, *args, **kwargs):
     user = instance
     carts = user.cart_set.all()
     if carts.count() == 0:
-        new_var = Cart()
-        new_var.user = user
-        new_var.save()
+        new_cart = Cart()
+        new_cart.user = user
+        new_cart.save()
 
 post_save.connect(user_post_saved_receiver, sender=User)
 
+def set_purchase_date_receiver(sender, instance, *args, **kwargs):
+    instance.set_puchase_date()
+
+post_save.connect(set_purchase_date_receiver, sender=Cart)
 
 
-# def cart_post_save_receiver(sender, instance, *args, **kwargs):
-# 	instance.cart.update_subtotal()
+def purchase_create_cart_receiver(sender, instance, *args, **kwargs):
+    cart = instance
+    if cart.purchased and cart.payment_token is not None:
+        new_cart = Cart()
+        new_cart.user = cart.user
+        new_cart.save()
 
-# post_save.connect(cart_post_save_receiver, sender=Cart)
+post_save.connect(purchase_create_cart_receiver, sender=Cart)
 
 
 class CartSerializer(serializers.ModelSerializer):

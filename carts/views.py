@@ -92,6 +92,33 @@ class CartsView(APIView):
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
         
  
+class HistoryView(APIView):
+    """
+    get:
+    Return a list of all existing carts
+
+    get: <id> 
+    Return cart with embeddeded image object
+    """
+
+    permission_classes = (AllowAny,)
+
+    @swagger_auto_schema(
+        responses={ status.HTTP_200_OK : CartSerializer(many=True)}
+    )
+    def get(self, request, _id=None):
+
+        if _id is not None:
+            # cart = Cart.objects.filter(user=_id, purchased=False)
+            carts = Cart.objects.filter(user=_id, purchased=True)
+            serializer = CartSerializer(carts, many=True)
+            return Response(serializer.data)
+        else:
+            carts = Cart.objects.filter(purchased=True)
+            serializer = CartSerializer(carts, many=True)
+            return Response(serializer.data)
+ 
+
 class CartItemsView(APIView):
     """
     get:
@@ -172,4 +199,3 @@ class CartItemsView(APIView):
         else:
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
         
- 
