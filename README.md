@@ -1,6 +1,6 @@
-# API Back End for SOCH (Python & Django REST)
+# SOCH Back End API (Python & Django REST)
 
-A django-rest boilerplate for 4Geeks Academy students. It features ready-for-deployment on heroku instructions.
+A django-rest api for Sisters of Culture Hair project
 
 ## Features
 
@@ -12,39 +12,45 @@ A django-rest boilerplate for 4Geeks Academy students. It features ready-for-dep
 
 Follow these steps:
 
-1. Make sure you have python 3.6 installed, if you are using Cloud9 you can install it by typing:
-```sh
+Make sure you have python 3.6 installed, if you are using Cloud9 you can install it by typing:
+```
 $ pyenv install 3.6.6   (this step takes a while)
 
 $ pyenv global 3.6.6
 ```
 
-##### :warning: Only run these steps 3 & 4 if you are starting the project from scratch
 
-3. Make sure your current folder is empty. 
-```sh
-$ ls
+##### Clone this project - BackEnd from :
 ```
-It should show no files or folders.
-
+$ git clone https://github.com/jodth07/SOCH-API.git
 $ pipenv install
-
 $ pipenv shell
 ```
 
-6. Run migrations
-```sh
+Run migrations
+```
+$ python manage.py makemigrations
 $ python manage.py migrate
+$ python manage.py createsuperuser
 ```
 
-7. Start the python server
-```sh
-$ python manage.py runserver $IP:$PORT
+Start the python server
+
 ```
+$ python manage.py runserver $IP:$PORT (on c9)
+$ python manage.py runserver 
+```
+
 
 ## What next?
 
-Your python API should be running smoothly.
+Your python API should be running smoothly on port 8000
+
+###set up the front end from 
+`https://github.com/jodth07/SOCH-FE`
+
+add images, products, styles and users.
+(make sure to change and update paypal info)
 
 
 ## Deploy your project to Heroku
