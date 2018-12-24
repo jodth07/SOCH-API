@@ -6,5 +6,6 @@ staticfiles
 Pipfile
 api/medias/*
 api/.DS_Store
-.DS_Store
+.DS*
 db_set/*
+
